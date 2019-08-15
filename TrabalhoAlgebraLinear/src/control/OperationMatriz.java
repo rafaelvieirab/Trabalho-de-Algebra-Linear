@@ -176,7 +176,7 @@ public class OperationMatriz {
 	}
 	
 	/*Determinantes*/
-	//Da para otimizar com cofator, pág 87 e 92 do livro de algebra
+	//Da para otimizar com cofator, pág 87,92 e 114do livro de algebra
 	public int determinante(Matriz matrix) {
 		if(!matrix.isSquare()) {
 			error("Cálculo de determinante","A matriz não é quadrada");
@@ -187,7 +187,9 @@ public class OperationMatriz {
 		}
 		if(matrix.getLinha() == 2) 
 			return matrix.value(0,0)*matrix.value(1,1) - matrix.value(0,1)*matrix.value(1,0); 
-		
+
+		//qualquer outra ordem fica recursivo
+		//para ordem 3
 		int deter = 0;
 		/*Somando Valores*/
 		//Padrão = aij, tal que i  cresce incrementalmente, 
