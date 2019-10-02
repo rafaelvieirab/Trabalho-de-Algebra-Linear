@@ -14,44 +14,41 @@ public class OperationMatriz {
 		return (b.getLinha() == a.getColuna());
 	}
 	
-	
 	private void error(String tipo, String msn) {
 		System.out.println("Tipo error: "+tipo+" ; Mensagem: "+msn);
 	}
 	
 	/*Adição*/
 	public Matriz additionMatriz(Matriz a, Matriz b) {
-		return operationSumSub(true,a,b);
+		if(!sameOrder(a,b)) { 
+			error("Soma ou subtração de Matrizes","As matrizes possuem ordens diferentes");
+			return null;
+		}
+		float[][] result =  new float[a.getLinha()][a.getColuna()];
+		
+		for(int linha = 0; linha < a.getLinha(); linha++) 
+			for(int coluna = 0; coluna < a.getColuna(); coluna++) 
+				result[linha][coluna] = a.value(linha,coluna) + b.value(linha,coluna);
+		return new Matriz(result);	
 	}
 	
 	/*Subtração*/
 	public Matriz subMatriz(Matriz a, Matriz b) {
-		return operationSumSub(false,a,b);
-	}
-	
-	/*Função Auxiliar da Adição e Subtração*/
-	private Matriz operationSumSub(boolean operation, Matriz a, Matriz b) {
-		
 		if(!sameOrder(a,b)) { 
 			error("Soma ou subtração de Matrizes","As matrizes possuem ordem diferentes");
 			return null;
 		}
-		
-		int[][] result =  new int[a.getLinha()][a.getColuna()];
+		float[][] result =  new float[a.getLinha()][a.getColuna()];
 		
 		for(int linha = 0; linha < a.getLinha(); linha++) 
 			for(int coluna = 0; coluna < a.getColuna(); coluna++) 
-				if(operation)//soma
-					result[linha][coluna] = a.value(linha,coluna) + b.value(linha,coluna);
-				else
-					result[linha][coluna] = a.value(linha,coluna) - b.value(linha,coluna);
-		
+				result[linha][coluna] = a.value(linha,coluna) - b.value(linha,coluna);
 		return new Matriz(result);	
 	}
 	
 	/*Multiplicação por Escalar*/
-	public Matriz scalarMultiplication(int scalar, Matriz matrix) {
-		int[][] result =  new int[matrix.getLinha()][matrix.getColuna()];
+	public Matriz scalarMultiplication(float scalar, Matriz matrix) {
+		float[][] result =  new float[matrix.getLinha()][matrix.getColuna()];
 		
 		for(int linha = 0; linha < matrix.getLinha(); linha++) 
 			for(int coluna = 0; coluna < matrix.getColuna(); coluna++) 
@@ -69,7 +66,7 @@ public class OperationMatriz {
 			return null;
 		}
 		
-		int[][] result =  new int[a.getLinha()][b.getColuna()];
+		float[][] result =  new float[a.getLinha()][b.getColuna()];
 		int soma;
 		
 		for(int linha = 0; linha < a.getLinha(); linha++) 
@@ -84,18 +81,18 @@ public class OperationMatriz {
 	
 	/*Transição*/
 	public Matriz transposition(Matriz matrix) {
-		int[][] result =  new int[matrix.getColuna()][matrix.getLinha()];
+		float[][] result =  new float[matrix.getColuna()][matrix.getLinha()];
 		
 		for(int linha = 0; linha < matrix.getLinha(); linha++) 
 			for(int coluna = 0; coluna < matrix.getColuna(); coluna++) 
-					result[coluna][linha] = matrix.value(linha,coluna);
+				result[coluna][linha] = matrix.value(linha,coluna);
 
 		return new Matriz(result);	
 	}
 	
 	/*Gera uma matriz identidade*/
 	private Matriz identity(int linha,int coluna) {
-		int[][] result =  new int[linha][coluna];
+		float[][] result =  new float[linha][coluna];
 		
 		for(int i = 0; i < linha; i++) 
 			for(int j = 0; j < coluna; j++) 
@@ -126,7 +123,30 @@ public class OperationMatriz {
 	/*Inversa*/		//Página  130
 	//A inversa de uma matriz M é igual a (1/(det M)) * (matriz adjunta de M)
 	public Matriz inverse(Matriz matrix) {
-		int escalar = 1/determinante(matrix);
+		if(!matrix.isSquare()) {
+			error("Inversão de Matrizes","A matriz não é quadrada!");
+			return null;
+		}
+		float det = determinante(matrix);
+		if(det == 0) {
+			error("Inversão de Matrizes","A matriz tem determinante igual a 0,"
+					+ " logo não admie inversa!");
+			return null;
+		}
+		if(matrix.getLinha() == 1) {
+			Matriz result = new Matriz(1,1);
+			result.setValue(0, 0, 1/matrix.value(0, 0));
+			return result;
+		}
+		if(matrix.getLinha() == 2) {
+			float[][] result = new float[2][2];
+			result[0][0] =  matrix.value(1, 1) / det;
+			result[0][1] =  -matrix.value(0, 1) / det;
+			result[1][0] =  -matrix.value(1, 0) / det;
+			result[1][1] =  matrix.value(0, 0) / det;
+			return new Matriz(result);
+		}
+		float escalar = 1/det;
 		return scalarMultiplication(escalar, adjunta(matrix)) ;
 	}
 	
@@ -144,29 +164,37 @@ public class OperationMatriz {
 			return null;
 		}
 		if(matrix.getLinha() == 1) {//O que acontece aqui?
-			return null;
+			return matrix;
 		}
-		int[][] result =  new int[matrix.getLinha()][matrix.getLinha()];
+		float[][] result =  new float[matrix.getLinha()][matrix.getLinha()];
 		
 		for(int linha = 0; linha < matrix.getLinha(); linha++) 
 			for(int coluna = 0; coluna < matrix.getColuna(); coluna++) {
-					result[linha][coluna] = (-1)^(linha+coluna) * cofator(matrix,linha,coluna);
+					result[linha][coluna] = cofator(matrix,linha,coluna);
 			}
 		return new Matriz(result);
 	}
 	
-	/*Gera o determinante das linhas excluidas*/
-	private int cofator(Matriz matrix,int linhaExcluida,int colunaExcluida) {
-		int[][] result =  new int[matrix.getLinha()-1][matrix.getLinha()-1];
+	/*Gera o cofator com o determinante das filas excluidas*/
+	private float cofator(Matriz matrix,int linhaExcluida,int colunaExcluida) {
+		float[][] result =  new float[matrix.getLinha()-1][matrix.getLinha()-1];
 				
-		for(int linha = 0; linha < matrix.getLinha(); linha++) {
-			if(linha == linhaExcluida) continue;//pula
-			for(int coluna = 0; coluna < matrix.getColuna(); coluna++) {
-				if(coluna == colunaExcluida) continue;//pula
+		for(int linha = 0; linha < linhaExcluida; linha++) {
+			for(int coluna = 0; coluna < colunaExcluida; coluna++) 
 				result[linha][coluna] = matrix.value(linha,coluna);
+			for(int coluna = colunaExcluida; coluna < matrix.getColuna()-1; coluna++) {
+				result[linha][coluna] = matrix.value(linha,coluna+1);
 			}
 		}
-		return determinante(new Matriz(result));
+		for(int linha = linhaExcluida; linha < matrix.getLinha()-1; linha++) {
+			for(int coluna = 0; coluna < colunaExcluida; coluna++) 
+				result[linha][coluna] = matrix.value(linha+1,coluna);
+			for(int coluna = colunaExcluida; coluna < matrix.getColuna()-1; coluna++) {
+				result[linha][coluna] = matrix.value(linha+1,coluna+1);
+			}
+		}
+		return ((-1)^(linhaExcluida+colunaExcluida+2)) * determinante(new Matriz(result));
+		//Obs.: Soma 2 pq comecamos a contar de 0, e não de 1
 	}
 	
 	/*Matriz Adjunta*/
@@ -176,49 +204,44 @@ public class OperationMatriz {
 	}
 	
 	/*Determinantes*/
-	//Da para otimizar com cofator, pág 87,92 e 114do livro de algebra
-	public int determinante(Matriz matrix) {
+	public float determinante(Matriz matrix) {
 		if(!matrix.isSquare()) {
-			error("Cálculo de determinante","A matriz não é quadrada");
-			return -1;
+			error("Cálculo de determinante","A matriz não é quadrada!");
+			return 0;
 		}
-		if(matrix.getLinha() == 1) {
+		if(matrix.getLinha() == 1) 
 			return matrix.value(0,0);
-		}
 		if(matrix.getLinha() == 2) 
 			return matrix.value(0,0)*matrix.value(1,1) - matrix.value(0,1)*matrix.value(1,0); 
 
 		//qualquer outra ordem fica recursivo
-		//para ordem 3
-		int deter = 0;
-		/*Somando Valores*/
-		//Padrão = aij, tal que i  cresce incrementalmente, 
-		//		e o j é a soma do incrementalmente mais o valor de i
-		for(int j = 0; j < matrix.getLinha(); j++) {
-			int mult = 1;
-			for(int i= 0; i < matrix.getLinha(); i++) 
-				mult *= matrix.value(i,i+j);
-			deter+=mult;
-		}
 		
-		/*Subtraindo Valores*/
-		//Identificar padrão
-		for(int j = 0; j < matrix.getLinha(); j++) {
-			int mult = 1;
-			for(int i= 0; i < matrix.getLinha(); i++) { 
-				mult *= matrix.value(i-2,i-1);
-				if(i-2 < 0) {
-					
+		Matriz result = new Matriz(matrix.getLinha(),matrix.getColuna());
+		//Regra de Chió
+		if(matrix.value(0,0) == 0) {
+			for(int i = 1; i < matrix.getLinha(); i++)
+				if(matrix.value(i,0) != 0) {
+					//trocar linhas
 				}
-			}
-			deter-=mult;
-			
-			
+			for(int i = 1; i < matrix.getColuna(); i++)
+				if(matrix.value(0,i) != 0) {
+					//trocar colunas
+				}
+			System.out.println("Não sei o que fazer");
 		}
 		
-		return deter;
+		float elem = 1 / matrix.value(0,0);
+		//Multiplicando a 1 coluna
+		if(matrix.value(0,0) != 1) {
+			for(int i = 0; i < matrix.getLinha(); i++)
+				result.setValue(i, 0, elem * matrix.value(i,0));
+		}
+		
+		for(int i = 1; i < matrix.getLinha(); i++)
+			for(int j = 1; j < matrix.getColuna(); j++)
+				result.setValue(i, j, matrix.value(i,j) - matrix.value(0, i) * matrix.value(i,0));
+		
+		return elem * determinante(result);
 	}
-	 
-	  
 	 
 }
