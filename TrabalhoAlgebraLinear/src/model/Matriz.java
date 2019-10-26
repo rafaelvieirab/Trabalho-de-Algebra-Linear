@@ -11,8 +11,10 @@ public class Matriz {
 		this.matriz = new float[linha][coluna];
 	}
 	
-	public Matriz(float[][] m) {
-		this.matriz = m;
+	public Matriz(float[][] array) {
+		this.linha = array.length;
+		this.coluna = array[0].length;
+		this.matriz = array;
 	}
 	
 	public int getLinha() {

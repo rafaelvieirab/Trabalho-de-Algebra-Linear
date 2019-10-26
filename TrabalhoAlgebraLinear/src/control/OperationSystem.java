@@ -4,53 +4,190 @@ import model.Matriz;
 import model.Sistema;
 
 public class OperationSystem {
+	//Singleton
+	private static OperationSystem instance = new OperationSystem();
+	
+	private OperationSystem() {}
+
+	public static OperationSystem getInstance() {
+		return instance;
+	}
+	
 	public Sistema gauss(Sistema system) {
 		float[][] matrixAmp = system.getMatrizAmpliada();
 		
 		if(system.getNumEq() <= 1)
 			return system;
+		System.out.println("\t\tEscalonamento por Gauss: ");
 		
 		for(int i = 0; i < system.getNumEq(); i++) {
 			float pivo = matrixAmp[i][i];
-			//começa de i+1 : pq só precisa reduzir as equações que estão abaixo
+			System.out.println("\nPivô: " + pivo + "\n");
 			
-			for(int j = i+1; j < system.getNumEq(); j++) {
-				float firstTermo = matrixAmp[j][i];	//pega o 1° elemento que vai ser zerado
+			for(int linha = i; linha < system.getNumEq(); linha++) {
+				float firstTermo = matrixAmp[linha][i];	//pega o 1° elemento que vai ser zerado
 				
-				for(int k = i+1; k < system.getNumIncog(); k++) {
-					matrixAmp[j][k] = matrixAmp[j][k] - (firstTermo/pivo)*matrixAmp[i][j];
-					// Lj = Lj - (p/q)*Li, onde
-					// p (firstTermo) = elemento ajk (Linha que vai ser zerada)
-					// q (pivo)= elemento aik (Linha do pivo)
+				for(int coluna = i; coluna < system.getNumIncog(); coluna++) {
+					System.out.println("L"+ linha + " <- L" + linha + "- ("+(firstTermo/pivo) +" * L"+ i +")");
+					matrixAmp[linha][coluna] = matrixAmp[linha][coluna] - (firstTermo/pivo) * matrixAmp[i][linha];
+					// L[linha] = L[linha] - (p/q)*Li, onde
+					// 		p (firstTermo) = elemento a[linha][coluna] (Linha que vai ser zerada)
+					// 		q (pivo)= elemento ai[coluna] (Linha do pivo)
 				}
 			}
 		}
 		return new Sistema(matrixAmp,system.getNumEq(), system.getNumIncog());
 	}
 	
+	//tem que ajustar
 	public Sistema gaussJordan(Sistema system) {
 		if(system.getNumEq() <= 1)
 			return system;
 		system = gauss(system);
 		float[][] matrixAmp = system.getMatrizAmpliada();
+
+		System.out.println("\t\tEscalonamento por Gauss: ");
 		
-		//Verificar depois
-		for(int i = system.getNumEq()-1; i >=0; i--) {
+		for(int i = system.getNumEq()-1; i >=0; i--) {//começa do final
 			float pivo = matrixAmp[i][i];
-			//começa do final
+			System.out.println("\nPivô: " + pivo + "\n");
 			
-			for(int j = i-1; j >= 0; j--) {
-				float firstTermo = matrixAmp[j][i];	//pega o 1° elemento que vai ser zerado
+			for(int linha = i-1; linha >= 0; linha--) {
+				float firstTermo = matrixAmp[linha][i];	//pega o 1° elemento que vai ser zerado
 				
-				for(int k = i-1; k >= 0; k--) {
-					matrixAmp[j][k] = matrixAmp[j][k] - (firstTermo/pivo)*matrixAmp[i][j];
-					// Lj = Lj - (p/q)*Li, onde
-					// p (firstTermo) = elemento ajk (Linha que vai ser zerada)
+				for(int coluna = i-1; coluna >= 0; coluna--) {
+					System.out.println("L"+ linha + " <- L" + linha + "- ("+(firstTermo/pivo) +" * L"+ i +")");
+					matrixAmp[linha][coluna] = matrixAmp[linha][coluna] - (firstTermo/pivo)*matrixAmp[i][linha];
+					// L[linha] = L[linha] - (p/q)*Li, onde
+					// p (firstTermo) = elemento a[linha]k (Linha que vai ser zerada)
 					// q (pivo)= elemento aik (Linha do pivo)
 				}
 			}
 		}
 		return new Sistema(matrixAmp,system.getNumEq(), system.getNumIncog());
 	}
+	//Retorna a classificação do sistema
+	public String analyzeSolucion(Sistema system) {
+		int analyze = analyzePost(system); 
+		if (analyze == 0) 
+			return "Possui somente uma única solução!\nSistema Possivel e Determinado";
+		else {
+			if(analyze == 1) 
+				return "Possui infinitas soluções!\nSistema Possivel e Indeterminado";
+			else
+				return "Possui somente uma solução!\nSistema Impossivel";
+		}
+	}
 	
+	//Analisa o posto das matrizes ampliada e dos coeficientes
+	public int analyzePost(Sistema system) {
+		Sistema systemEscalonado = gaussJordan(system); //Escalona o sistema
+		float[][] matrix = system.getMatrizAmpliada(); 
+		int postoAmp = 0;	//número de linhas não nulas da matriz AMPLIADA
+		int postoCoef = 0;	//" "	"	"	"	"	"	"	" 	COEFICIENTES
+		
+		for(int linha = 0; linha < system.getNumEq(); linha++) {
+			int coluna = 0;
+			for( ; coluna < system.getNumIncog(); coluna++) {
+				if(matrix[linha][coluna] != 0)
+					break;
+			}
+			//se não chegou no último elemento(termo independente), então alguém é diferente de 0
+			if(coluna < system.getNumIncog()-1) {  
+				postoAmp++;
+				//se não chegou no último coeficiente, então alguém é diferente de 0
+				if(coluna < system.getNumIncog()-2)
+					postoCoef++;
+			}
+			
+		}
+		if(postoAmp == postoCoef) {
+			if(postoAmp == system.getNumIncog())
+				return 0; //  Sistema Possivel e Determinado
+			return 1; //  Sistema Impossivel e Determinado
+		}
+		return 2;//  Sistema Impossivel
+	}
+
+	//Terminar .....
+	//Apresenta as possiveis soluções
+	public void solucions(Sistema system) {
+		system = gaussJordan(system);
+		if(analyzePost(system) == 2)// Sistema Impossivel
+			System.out.println("Não existe solução!");
+		
+		for(int linha = 0, coluna = 0; linha < system.getNumEq() && coluna < system.getNumIncog(); linha++, coluna++) {
+			System.out.println("a["+ linha + "]" +"["+ coluna+ "]" +  
+					           "" + system.getCoef(linha, coluna) + " = " + system.getCoef(linha, system.getNumIncog()-1));
+		}
+	}
+	
+	//Terminar
+	//Exibe a matriz L e a matriz U
+	public void fatoracaoLU(Sistema system) {
+		//A = L*U
+		//A*x = b
+		//L*U*x = b
+			//Ly = b
+			//U*x = y
+
+		//L é uma matriz triangular inferior
+		//U "  "	"		 "	 	superior
+		/*=>Como obter L e U		
+			*=> Coloca-se a matriz dos coeficientes da original ao lado da matriz identidade;
+			*=>Realiza Gauss em cima das duas;
+			*=> A matriz original escalada é a matriz U
+			*=> A matriz identidade escalada é a matriz L
+			**/
+		float[][] matrixLU = new float[system.getNumEq()][2*system.getNumIncog()];
+		
+		for(int linha = 0; linha < system.getNumEq(); linha++) {
+			//copiando os valores da matriz dos coeficientes original
+			int coluna = 0;
+			for( ; coluna < system.getNumIncog(); coluna++) {
+				matrixLU[linha][coluna] = system.getCoef(linha, coluna);
+			}
+			
+			//Verificar isso
+			//Escrevendo os valores da matriz Identidade
+			for( ; coluna < 2*system.getNumIncog() && (coluna-system.getNumIncog()) != linha; coluna++) {
+				matrixLU[linha][coluna] = 0;
+			}
+			matrixLU[linha][coluna] = 1; //elemento da diagonal da matriz Identidade
+			coluna++;
+			for( ; coluna < 2 * system.getNumIncog(); coluna++) {
+				matrixLU[linha][coluna] = 0;
+			}
+		}
+		//Escalona as matrizes original e identidade
+		float[][] lu = gauss(new Sistema(matrixLU, system.getNumEq(), 2*system.getNumIncog())).getMatrizAmpliada();
+		
+		//Separa a matriz escalonada em nas matrizes L e U correspondentes
+		float[][] matrixU = new float[system.getNumEq()][system.getNumIncog()];
+		float[][] matrixL = new float[system.getNumEq()][system.getNumIncog()];
+		
+		for(int linha = 0; linha < system.getNumEq(); linha++) {
+			for(int coluna = 0; coluna < system.getNumIncog(); coluna++) {
+				matrixU[linha][coluna] = lu[linha][coluna];
+				matrixL[linha][coluna] = lu[linha][coluna + system.getNumIncog()]; 
+			}
+		}
+		
+		//Mostrando na tela
+		System.out.println("\nMatriz U:");
+		for(int linha = 0; linha < system.getNumEq(); linha++) {
+			System.out.println("\n");
+			for(int coluna = 0; coluna < system.getNumIncog(); coluna++) {
+				System.out.println(matrixU[linha][coluna]+" "); 
+			}
+		}
+		System.out.println("\n\nMatriz L:");
+		for(int linha = 0; linha < system.getNumEq(); linha++) {
+			System.out.println("\n");
+			for(int coluna = 0; coluna < system.getNumIncog(); coluna++) {
+				System.out.println(matrixL[linha][coluna]+" "); 
+			}
+		}
+		
+	}
 }

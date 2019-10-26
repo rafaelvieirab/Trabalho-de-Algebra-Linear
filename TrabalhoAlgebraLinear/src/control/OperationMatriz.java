@@ -3,6 +3,13 @@ package control;
 import model.Matriz;
 
 public class OperationMatriz {
+	private static OperationMatriz instance = new OperationMatriz();
+	
+	private OperationMatriz() {}
+
+	public static OperationMatriz getInstance() {
+		return instance;
+	}
 	
 	/*Verifica se duas matrizes tem a mesma ordem*/
 	private boolean sameOrder(Matriz a, Matriz b) {
