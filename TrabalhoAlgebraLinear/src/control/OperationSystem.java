@@ -66,6 +66,7 @@ public class OperationSystem {
 		}
 		return new Sistema(matrixAmp,system.getNumEq(), system.getNumIncog());
 	}
+	
 	//Retorna a classificação do sistema
 	public String analyzeSolucion(Sistema system) {
 		int analyze = analyzePost(system); 
@@ -84,7 +85,7 @@ public class OperationSystem {
 		Sistema systemEscalonado = gaussJordan(system); //Escalona o sistema
 		float[][] matrix = system.getMatrizAmpliada(); 
 		int postoAmp = 0;	//número de linhas não nulas da matriz AMPLIADA
-		int postoCoef = 0;	//" "	"	"	"	"	"	"	" 	COEFICIENTES
+		int postoCoef = 0;	//" "	"	"	"	"	"	"	" 	   COEFICIENTES
 		
 		for(int linha = 0; linha < system.getNumEq(); linha++) {
 			int coluna = 0;

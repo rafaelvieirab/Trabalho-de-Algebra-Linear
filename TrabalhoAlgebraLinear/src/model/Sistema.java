@@ -1,8 +1,8 @@
 package model;
 
 public class Sistema {
-	private int numEq; //número de equações
-	private int numIncog; //número de incógnitas
+	private int numEq; //número de equações    => Linhas
+	private int numIncog; //número de incógnitas => Colunas
 	private float[][] coef; //coeficientes das incógnitas
 	private float[] termo; //termo constante
 	
