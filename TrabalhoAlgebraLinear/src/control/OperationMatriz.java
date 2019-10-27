@@ -3,6 +3,7 @@ package control;
 import model.Matriz;
 
 public class OperationMatriz {
+	//Singleton ou Deixa todos os metódos estáticos
 	private static OperationMatriz instance = new OperationMatriz();
 	
 	private OperationMatriz() {}
@@ -11,21 +12,24 @@ public class OperationMatriz {
 		return instance;
 	}
 	
-	/*Verifica se duas matrizes tem a mesma ordem*/
+	//Funções
+	
+	/*Verifica se duas matrizes tem a mesma Ordem (Número de Linhas e Colunas)*/
 	private boolean sameOrder(Matriz a, Matriz b) {
 		return (a.getLinha() == b.getLinha() ) && (a.getColuna() == b.getColuna());
 	}
 	
-	/*Verificar se é possivel fazer a Multiplicação*/
+	/*Verificar se é Possivel fazer a Multiplicação*/
 	private boolean verifyMult(Matriz a, Matriz b) {
 		return (b.getLinha() == a.getColuna());
 	}
 	
+	/*Imprime um Erro*/
 	private void error(String tipo, String msn) {
 		System.out.println("Tipo error: "+tipo+" ; Mensagem: "+msn);
 	}
 	
-	/*Adição*/
+	/*Operação de Adição de Martizes*/
 	public Matriz additionMatriz(Matriz a, Matriz b) {
 		if(!sameOrder(a,b)) { 
 			error("Soma ou subtração de Matrizes","As matrizes possuem ordens diferentes");
@@ -39,7 +43,7 @@ public class OperationMatriz {
 		return new Matriz(result);	
 	}
 	
-	/*Subtração*/
+	/*Operação de Subtração de Martizes*/
 	public Matriz subMatriz(Matriz a, Matriz b) {
 		if(!sameOrder(a,b)) { 
 			error("Soma ou subtração de Matrizes","As matrizes possuem ordem diferentes");
@@ -86,7 +90,7 @@ public class OperationMatriz {
 		return new Matriz(result);	
 	}
 	
-	/*Transição*/
+	/*Transposição*/
 	public Matriz transposition(Matriz matrix) {
 		float[][] result =  new float[matrix.getColuna()][matrix.getLinha()];
 		
@@ -108,7 +112,7 @@ public class OperationMatriz {
 		return new Matriz(result);
 	}
 	
-	/*Potencia*/
+	/*Potência*/
 	public Matriz potency(Matriz matrix, int expoente) {
 		if(!matrix.isSquare()) { 
 			error("Potência de Matriz","A matriz não é quadrada");
@@ -127,7 +131,7 @@ public class OperationMatriz {
 		return result;
 	}
 	
-	/*Inversa*/		//Página  130
+	/*Inversa*/		//Página  130 do Livro
 	//A inversa de uma matriz M é igual a (1/(det M)) * (matriz adjunta de M)
 	public Matriz inverse(Matriz matrix) {
 		if(!matrix.isSquare()) {
@@ -158,14 +162,12 @@ public class OperationMatriz {
 	}
 	
 	/*Matriz cofatora*/
-	/*  O cofator do elemento aij desta matriz A é obtido da seguinte forma:
-		   				Aij=((-1)^(i+j)) * Dij
-	Devemos compreender os elementos dessa expressão. O valor Aij é justamente o 
-	cofator do elemento aij da matriz A, enquanto que Dij será o determinante da matriz 
-	obtida através da matriz A, entretanto você deverá excluir da matriz A os elementos
-	 da linha i e da coluna j. 
-	*/
 	public Matriz matrizCofatora(Matriz matrix) {
+		/*  O cofator do elemento aij desta matriz A é obtido da seguinte forma:
+					Aij=((-1)^(i+j)) * Dij
+		 * Aij: cofator do elemento aij da matriz A
+		 * Dij: determinante da matriz obtida através da matriz A, excluindo a linha i e a coluna j. 
+		 */
 		if(!matrix.isSquare()) {
 			error("Matriz Cofatora","A matriz não é quadrada");
 			return null;
@@ -205,12 +207,12 @@ public class OperationMatriz {
 	}
 	
 	/*Matriz Adjunta*/
-	//É a transposta da matriz de cofatores
 	public Matriz adjunta(Matriz matrix) {
+		//É a transposta da matriz de cofatores
 		return transposition(matrizCofatora(matrix));
 	}
 	
-	/*Determinantes*/
+	/*Determinante*/
 	public float determinante(Matriz matrix) {
 		if(!matrix.isSquare()) {
 			error("Cálculo de determinante","A matriz não é quadrada!");

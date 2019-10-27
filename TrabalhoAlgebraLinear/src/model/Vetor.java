@@ -11,6 +11,7 @@ public class Vetor {
 		this.coordenadas = coordenadas;
 	}
 	
+	//Retorna o vetor atual normalizado
 	public Vetor normaliza() {
 		float norma = modulo();
 		if(norma == 1)
@@ -22,14 +23,15 @@ public class Vetor {
 		return newVector;
 	}
 	
+	//Retorna o modulo do vetor
 	public float modulo() {
 		float norma = 0;
 		for(int posCoordenada = 0; posCoordenada < coordenadas.length; posCoordenada++) 
 			norma += coordenadas[posCoordenada] * coordenadas[posCoordenada]; 
-		
 		return (float) Math.sqrt(norma);
 	}
 	
+	//Retorna um vetor multiplicado por um Escalar
 	public Vetor multiplicaEscalar(float scalar) {
 		float[] vetorEscalonado = new float[this.coordenadas.length];
 		for(int posCoordenada = 0; posCoordenada < coordenadas.length; posCoordenada++) 
@@ -38,15 +40,18 @@ public class Vetor {
 		return new Vetor(vetorEscalonado);
 	}
 	
+	//Retorna a quantidade de coordenadas do vetor
 	public int getNumCoordenadas() {
 		return coordenadas.length;
 	}
 	
+	//Retorna o valor de uma determinada coordenada do vetor
 	public float getValorCoordenada(int posCoordenada) {
 		return (posCoordenada >= 0 && posCoordenada < coordenadas.length) ?
 				coordenadas[posCoordenada] : 0;
 	}
 	
+	//retorna todas as coordenadas como um array de float
 	public float[] getCoordenadas() {
 		return coordenadas;
 	}
@@ -54,6 +59,5 @@ public class Vetor {
 	public void setCoordenadas(float[] coordenadas) {
 		this.coordenadas = coordenadas;
 	}
-	
 	
 }

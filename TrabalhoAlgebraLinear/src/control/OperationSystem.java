@@ -13,6 +13,9 @@ public class OperationSystem {
 		return instance;
 	}
 	
+	//Funções
+	
+	/*Gauss*/
 	public Sistema gauss(Sistema system) {
 		float[][] matrixAmp = system.getMatrizAmpliada();
 		
@@ -40,7 +43,9 @@ public class OperationSystem {
 	}
 	
 	//tem que ajustar
+	/*Gauss-Jordan*/
 	public Sistema gaussJordan(Sistema system) {
+		//TODO
 		if(system.getNumEq() <= 1)
 			return system;
 		system = gauss(system);
@@ -67,7 +72,7 @@ public class OperationSystem {
 		return new Sistema(matrixAmp,system.getNumEq(), system.getNumIncog());
 	}
 	
-	//Retorna a classificação do sistema
+	/*Retorna a Classificação (SPD,SPI ou SI) do sistema*/
 	public String analyzeSolucion(Sistema system) {
 		int analyze = analyzePost(system); 
 		if (analyze == 0) 
@@ -80,7 +85,7 @@ public class OperationSystem {
 		}
 	}
 	
-	//Analisa o posto das matrizes ampliada e dos coeficientes
+	/*Analisa o posto das matrizes ampliada e dos coeficientes*/
 	public int analyzePost(Sistema system) {
 		Sistema systemEscalonado = gaussJordan(system); //Escalona o sistema
 		float[][] matrix = system.getMatrizAmpliada(); 
@@ -111,8 +116,9 @@ public class OperationSystem {
 	}
 
 	//Terminar .....
-	//Apresenta as possiveis soluções
+	/*Apresenta as possiveis soluções*/
 	public void solucions(Sistema system) {
+		//TODO
 		system = gaussJordan(system);
 		if(analyzePost(system) == 2)// Sistema Impossivel
 			System.out.println("Não existe solução!");
@@ -124,8 +130,9 @@ public class OperationSystem {
 	}
 	
 	//Terminar
-	//Exibe a matriz L e a matriz U
+	/*Fatora o sistema na matriz L e na matriz U*/
 	public void fatoracaoLU(Sistema system) {
+		//TODO
 		//A = L*U
 		//A*x = b
 		//L*U*x = b
@@ -191,4 +198,5 @@ public class OperationSystem {
 		}
 		
 	}
+
 }
