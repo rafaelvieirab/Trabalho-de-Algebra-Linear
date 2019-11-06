@@ -6,9 +6,9 @@ import control.*;
 public class Teste{
 	public static void main(String[] args) {
 		
-		float[][] valoresA = {{5,0},{7,2},{2,1}};
+		double[][] valoresA = {{5,0},{7,2},{2,1}};
 		Matriz a = new Matriz(valoresA);
-		float[][] valoresB = {{2,0},{1,(-1)},{1,2}};
+		double[][] valoresB = {{2,0},{1,(-1)},{1,2}};
 		Matriz b = new Matriz(valoresB);
 		
 		Matriz r = OperationMatriz.getInstance().subMatriz(a, b);

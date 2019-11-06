@@ -35,7 +35,7 @@ public class OperationMatriz {
 			error("Soma ou subtração de Matrizes","As matrizes possuem ordens diferentes");
 			return null;
 		}
-		float[][] result =  new float[a.getLinha()][a.getColuna()];
+		double[][] result =  new double[a.getLinha()][a.getColuna()];
 		
 		for(int linha = 0; linha < a.getLinha(); linha++) 
 			for(int coluna = 0; coluna < a.getColuna(); coluna++) 
@@ -49,7 +49,7 @@ public class OperationMatriz {
 			error("Soma ou subtração de Matrizes","As matrizes possuem ordem diferentes");
 			return null;
 		}
-		float[][] result =  new float[a.getLinha()][a.getColuna()];
+		double[][] result =  new double[a.getLinha()][a.getColuna()];
 		
 		for(int linha = 0; linha < a.getLinha(); linha++) 
 			for(int coluna = 0; coluna < a.getColuna(); coluna++) 
@@ -58,8 +58,8 @@ public class OperationMatriz {
 	}
 	
 	/*Multiplicação por Escalar*/
-	public Matriz scalarMultiplication(float scalar, Matriz matrix) {
-		float[][] result =  new float[matrix.getLinha()][matrix.getColuna()];
+	public Matriz scalarMultiplication(double scalar, Matriz matrix) {
+		double[][] result =  new double[matrix.getLinha()][matrix.getColuna()];
 		
 		for(int linha = 0; linha < matrix.getLinha(); linha++) 
 			for(int coluna = 0; coluna < matrix.getColuna(); coluna++) 
@@ -77,7 +77,7 @@ public class OperationMatriz {
 			return null;
 		}
 		
-		float[][] result =  new float[a.getLinha()][b.getColuna()];
+		double[][] result =  new double[a.getLinha()][b.getColuna()];
 		int soma;
 		
 		for(int linha = 0; linha < a.getLinha(); linha++) 
@@ -92,7 +92,7 @@ public class OperationMatriz {
 	
 	/*Transposição*/
 	public Matriz transposition(Matriz matrix) {
-		float[][] result =  new float[matrix.getColuna()][matrix.getLinha()];
+		double[][] result =  new double[matrix.getColuna()][matrix.getLinha()];
 		
 		for(int linha = 0; linha < matrix.getLinha(); linha++) 
 			for(int coluna = 0; coluna < matrix.getColuna(); coluna++) 
@@ -103,7 +103,7 @@ public class OperationMatriz {
 	
 	/*Gera uma matriz identidade*/
 	private Matriz identity(int linha,int coluna) {
-		float[][] result =  new float[linha][coluna];
+		double[][] result =  new double[linha][coluna];
 		
 		for(int i = 0; i < linha; i++) 
 			for(int j = 0; j < coluna; j++) 
@@ -138,7 +138,7 @@ public class OperationMatriz {
 			error("Inversão de Matrizes","A matriz não é quadrada!");
 			return null;
 		}
-		float det = determinante(matrix);
+		double det = determinante(matrix);
 		if(det == 0) {
 			error("Inversão de Matrizes","A matriz tem determinante igual a 0,"
 					+ " logo não admie inversa!");
@@ -150,14 +150,14 @@ public class OperationMatriz {
 			return result;
 		}
 		if(matrix.getLinha() == 2) {
-			float[][] result = new float[2][2];
+			double[][] result = new double[2][2];
 			result[0][0] =  matrix.value(1, 1) / det;
 			result[0][1] =  -matrix.value(0, 1) / det;
 			result[1][0] =  -matrix.value(1, 0) / det;
 			result[1][1] =  matrix.value(0, 0) / det;
 			return new Matriz(result);
 		}
-		float escalar = 1/det;
+		double escalar = 1/det;
 		return scalarMultiplication(escalar, adjunta(matrix)) ;
 	}
 	
@@ -175,7 +175,7 @@ public class OperationMatriz {
 		if(matrix.getLinha() == 1) {//O que acontece aqui?
 			return matrix;
 		}
-		float[][] result =  new float[matrix.getLinha()][matrix.getLinha()];
+		double[][] result =  new double[matrix.getLinha()][matrix.getLinha()];
 		
 		for(int linha = 0; linha < matrix.getLinha(); linha++) 
 			for(int coluna = 0; coluna < matrix.getColuna(); coluna++) {
@@ -185,8 +185,8 @@ public class OperationMatriz {
 	}
 	
 	/*Gera o cofator com o determinante das filas excluidas*/
-	private float cofator(Matriz matrix,int linhaExcluida,int colunaExcluida) {
-		float[][] result =  new float[matrix.getLinha()-1][matrix.getLinha()-1];
+	private double cofator(Matriz matrix,int linhaExcluida,int colunaExcluida) {
+		double[][] result =  new double[matrix.getLinha()-1][matrix.getLinha()-1];
 				
 		for(int linha = 0; linha < linhaExcluida; linha++) {
 			for(int coluna = 0; coluna < colunaExcluida; coluna++) 
@@ -213,7 +213,7 @@ public class OperationMatriz {
 	}
 	
 	/*Determinante*/
-	public float determinante(Matriz matrix) {
+	public double determinante(Matriz matrix) {
 		if(!matrix.isSquare()) {
 			error("Cálculo de determinante","A matriz não é quadrada!");
 			return 0;
@@ -239,7 +239,7 @@ public class OperationMatriz {
 			System.out.println("Não sei o que fazer");
 		}
 		
-		float elem = 1 / matrix.value(0,0);
+		double elem = 1 / matrix.value(0,0);
 		//Multiplicando a 1 coluna
 		if(matrix.value(0,0) != 1) {
 			for(int i = 0; i < matrix.getLinha(); i++)

@@ -8,8 +8,8 @@ public class Gram_Schmidt {
 	//Projeta vector1 em vector2, ou seja, Faz com que vector1 seja perpendicular ao vector2
 	private Vetor projection(Vetor vector1,Vetor vector2) {//v = vector1, w = vector2
 		//proj(v,w) = cw = 	((v*w) /(w*w)) * w
-		float vw = productInternal(vector1, vector2);
-		float ww= vector2.modulo();
+		double vw = productInternal(vector1, vector2);
+		double ww= vector2.modulo();
 		return vector2.multiplicaEscalar(vw/ww);
 	}
 	
@@ -50,7 +50,7 @@ public class Gram_Schmidt {
 	
 	//Transforma os vetores em um sistema escalonado
 	private Sistema vectorArrayToSystem(Vetor[] base) {
-		float[][] coordenadas = new float[base.length][base[0].getNumCoordenadas()+1]; //+1, pq tem que ter uma coluan zerada para não bugar o posto
+		double[][] coordenadas = new double[base.length][base[0].getNumCoordenadas()+1]; //+1, pq tem que ter uma coluan zerada para não bugar o posto
 		for(int i = 0; i< base.length; i++) {
 			int j = 0;
 			for( ; j< base[0].getNumCoordenadas(); j++) {
@@ -65,7 +65,7 @@ public class Gram_Schmidt {
 	/*
 	private Vetor[] systemToVectorArray(Sistema system) {
 		Vetor[] vectorArray = new Vetor[system.getNumEq()];
-		float[][] coordenadas = system.getMatrizCoef();
+		double[][] coordenadas = system.getMatrizCoef();
 		
 		for(int i = 0; i< system.getNumEq(); i++) 
 			vectorArray[i] = new Vetor(coordenadas[i]);
@@ -81,7 +81,7 @@ public class Gram_Schmidt {
 	 * 	=> pode acontecer do vetor ter todos vetores independentes, que podem está no final do sistema,
 	 *  e antes dele estiverem várias linhas zeradas).
 	 */
-		float[][] array = system.getMatrizCoef();
+		double[][] array = system.getMatrizCoef();
 		for(int i =0 ; i< array.length; i++) {
 			
 			if(array[i][i] == 0) {//Sobrescreve a linha atual, criando o vetor independe que estava faltando
@@ -105,8 +105,8 @@ public class Gram_Schmidt {
 	}
 	
 	//Retorna o Produto Interno entre dois vetores
-	private float productInternal(Vetor vector1,Vetor vector2) {
-		float resultado = 0;
+	private double productInternal(Vetor vector1,Vetor vector2) {
+		double resultado = 0;
 		for(int posCoordenada = 0; posCoordenada < vector1.getNumCoordenadas(); posCoordenada++) 
 			resultado += vector1.getValorCoordenada(posCoordenada) * vector2.getValorCoordenada(posCoordenada); 
 		return resultado;
@@ -114,7 +114,7 @@ public class Gram_Schmidt {
 	
 	//Retorna o vetor resultante da subtração entre dois vetores
 	private Vetor subtraction(Vetor vector1,Vetor vector2) {
-		float[] resultado = new float[vector1.getNumCoordenadas()];
+		double[] resultado = new double[vector1.getNumCoordenadas()];
 		for(int posCoordenada = 0; posCoordenada < vector1.getNumCoordenadas(); posCoordenada++) 
 			resultado[posCoordenada] = vector1.getValorCoordenada(posCoordenada) - vector2.getValorCoordenada(posCoordenada); 
 		return new Vetor(resultado);

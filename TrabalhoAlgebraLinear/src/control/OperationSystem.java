@@ -17,18 +17,18 @@ public class OperationSystem {
 	
 	/*Gauss*/
 	public Sistema gauss(Sistema system) {
-		float[][] matrixAmp = system.getMatrizAmpliada();
+		double[][] matrixAmp = system.getMatrizAmpliada();
 		
 		if(system.getNumEq() <= 1)
 			return system;
 		System.out.println("\t\tEscalonamento por Gauss: ");
 		
 		for(int i = 0; i < system.getNumEq(); i++) {
-			float pivo = matrixAmp[i][i];
+			double pivo = matrixAmp[i][i];
 			System.out.println("\nPivô: " + pivo + "\n");
 			
 			for(int linha = i; linha < system.getNumEq(); linha++) {
-				float firstTermo = matrixAmp[linha][i];	//pega o 1° elemento que vai ser zerado
+				double firstTermo = matrixAmp[linha][i];	//pega o 1° elemento que vai ser zerado
 				
 				for(int coluna = i; coluna < system.getNumIncog(); coluna++) {
 					System.out.println("L"+ linha + " <- L" + linha + "- ("+(firstTermo/pivo) +" * L"+ i +")");
@@ -49,16 +49,16 @@ public class OperationSystem {
 		if(system.getNumEq() <= 1)
 			return system;
 		system = gauss(system);
-		float[][] matrixAmp = system.getMatrizAmpliada();
+		double[][] matrixAmp = system.getMatrizAmpliada();
 
 		System.out.println("\t\tEscalonamento por Gauss: ");
 		
 		for(int i = system.getNumEq()-1; i >=0; i--) {//começa do final
-			float pivo = matrixAmp[i][i];
+			double pivo = matrixAmp[i][i];
 			System.out.println("\nPivô: " + pivo + "\n");
 			
 			for(int linha = i-1; linha >= 0; linha--) {
-				float firstTermo = matrixAmp[linha][i];	//pega o 1° elemento que vai ser zerado
+				double firstTermo = matrixAmp[linha][i];	//pega o 1° elemento que vai ser zerado
 				
 				for(int coluna = i-1; coluna >= 0; coluna--) {
 					System.out.println("L"+ linha + " <- L" + linha + "- ("+(firstTermo/pivo) +" * L"+ i +")");
@@ -88,7 +88,7 @@ public class OperationSystem {
 	/*Analisa o posto das matrizes ampliada e dos coeficientes*/
 	public int analyzePost(Sistema system) {
 		Sistema systemEscalonado = gaussJordan(system); //Escalona o sistema
-		float[][] matrix = system.getMatrizAmpliada(); 
+		double[][] matrix = system.getMatrizAmpliada(); 
 		int postoAmp = 0;	//número de linhas não nulas da matriz AMPLIADA
 		int postoCoef = 0;	//" "	"	"	"	"	"	"	" 	   COEFICIENTES
 		
@@ -147,7 +147,7 @@ public class OperationSystem {
 			*=> A matriz original escalada é a matriz U
 			*=> A matriz identidade escalada é a matriz L
 			**/
-		float[][] matrixLU = new float[system.getNumEq()][2*system.getNumIncog()];
+		double[][] matrixLU = new double[system.getNumEq()][2*system.getNumIncog()];
 		
 		for(int linha = 0; linha < system.getNumEq(); linha++) {
 			//copiando os valores da matriz dos coeficientes original
@@ -168,11 +168,11 @@ public class OperationSystem {
 			}
 		}
 		//Escalona as matrizes original e identidade
-		float[][] lu = gauss(new Sistema(matrixLU, system.getNumEq(), 2*system.getNumIncog())).getMatrizAmpliada();
+		double[][] lu = gauss(new Sistema(matrixLU, system.getNumEq(), 2*system.getNumIncog())).getMatrizAmpliada();
 		
 		//Separa a matriz escalonada em nas matrizes L e U correspondentes
-		float[][] matrixU = new float[system.getNumEq()][system.getNumIncog()];
-		float[][] matrixL = new float[system.getNumEq()][system.getNumIncog()];
+		double[][] matrixU = new double[system.getNumEq()][system.getNumIncog()];
+		double[][] matrixL = new double[system.getNumEq()][system.getNumIncog()];
 		
 		for(int linha = 0; linha < system.getNumEq(); linha++) {
 			for(int coluna = 0; coluna < system.getNumIncog(); coluna++) {
