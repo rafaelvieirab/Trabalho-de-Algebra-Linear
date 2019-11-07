@@ -13,7 +13,9 @@ public class TelaMatriz extends Application{
 	
 	public static void main(String[] args) {
 		System.out.println("ge");
+	
 		launch();
+		
 	}
 
 	@Override
@@ -23,13 +25,13 @@ public class TelaMatriz extends Application{
 		 * VBox: Alinha os componentes verticalmente;
 		 * HBox: Alinha os componentes horizontamente;
 		 * StackPane: Empilha um componente sobre o outro;
-		 * BorderPane: Divide os elementos em regiões e coloca um componente em cada uma 
-	* desses regiões
-		 * FlowPane:  Ajeita os componentes de acordo com uma orientação e com o fluxo da aplicação;
-		 * GridPane: Cria uma grade com os componentes. É possível informar qual a posição do 
+		 * BorderPane: Divide os elementos em regiï¿½es e coloca um componente em cada uma 
+	* desses regiï¿½es
+		 * FlowPane:  Ajeita os componentes de acordo com uma orientaï¿½ï¿½o e com o fluxo da aplicaï¿½ï¿½o;
+		 * GridPane: Cria uma grade com os componentes. ï¿½ possï¿½vel informar qual a posiï¿½ï¿½o do 
 	* componente na grade;
-		 * AnchorPane: Os componentes filhos são "ancorados"  em uma parte do painel;
-		 * TilePane: Um painel com pedaços (Tile vem do inglês e significa azulejo) para os 
+		 * AnchorPane: Os componentes filhos sï¿½o "ancorados"  em uma parte do painel;
+		 * TilePane: Um painel com pedaï¿½os (Tile vem do inglï¿½s e significa azulejo) para os 
 	* componentes semelhante ao GridPane, mas permite tratamento dos "Tiles";*/
 		
 		//Matriz A
@@ -51,12 +53,12 @@ public class TelaMatriz extends Application{
 		Button btnGerarMatrizB = new Button();
 		
 		
-		//Botoes de funções
+		//Botoes de funï¿½ï¿½es
 		Button btnSoma = new Button();
 		btnSoma.setTooltip(new Tooltip("Soma das matrizes A e B"));
 		
 		Button btnSubtracao = new Button();
-		btnSubtracao.setTooltip(new Tooltip("Subtração da matriz A por B"));
+		btnSubtracao.setTooltip(new Tooltip("Subtraï¿½ï¿½o da matriz A por B"));
 		
 		Button btnMultiplicaEscalar = new Button();
 		btnMultiplicaEscalar.setTooltip(new Tooltip("Multiplica a matriz A por um Escalar"));
@@ -68,7 +70,7 @@ public class TelaMatriz extends Application{
 		btnTransposta.setTooltip(new Tooltip("Transposta da matriz A"));
 		
 		Button btnPotencia = new Button();
-		btnPotencia.setTooltip(new Tooltip("Potência da matrizes A"));
+		btnPotencia.setTooltip(new Tooltip("Potï¿½ncia da matrizes A"));
 		
 		Button btnMatrizCofatora = new Button();
 		btnMatrizCofatora.setTooltip(new Tooltip("Matriz Cofatora de A"));
@@ -84,7 +86,7 @@ public class TelaMatriz extends Application{
 			//Alguma coisa para exibir
 		
 		Scene cena = new Scene(dadosMatrizA, 300, 400);
-		palco.setTitle("Operações com Matrizes");
+		palco.setTitle("Operaï¿½ï¿½es com Matrizes");
 		palco.setScene(cena);
 		palco.show();
 		
