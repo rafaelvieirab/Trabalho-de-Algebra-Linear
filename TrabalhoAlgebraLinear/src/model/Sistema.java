@@ -6,7 +6,7 @@ public class Sistema {
 	private double[][] coef; //Matriz dos Coeficientes das incógnitas
 	private double[] termo; //Matriz dos Termos Independentes
 	
-	//Construtor: recebe tudo
+	//Construtor padrão
 	public Sistema(int numEq, int numIncog, double[][] coef, double[] termo) {
 		this.numEq = numEq;
 		this.numIncog = numIncog;
@@ -18,13 +18,15 @@ public class Sistema {
 	public Sistema(double[][] matrizAmp, int numEq, int numIncog ) {
 		this.numEq = numEq;
 		this.numIncog = numIncog;
+		this.coef = new double[numEq][numIncog];
+		this.termo = new double[numEq];
 		
 		for(int i = 0; i < numEq; i++) 
 			for(int j = 0; j < numIncog; j++)
 				this.coef[i][j] = matrizAmp[i][j];
 		
 		for(int i = 0; i < numEq; i++) 
-			this.termo[i] = matrizAmp[i][numIncog];
+			this.termo[i] = matrizAmp[i][numIncog]; 
 	}
 	
 	//Retorna o número de Equações (Linhas do Sistema)

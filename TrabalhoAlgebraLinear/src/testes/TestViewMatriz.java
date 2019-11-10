@@ -30,8 +30,8 @@ public class TestViewMatriz extends Application  {
 	@Override
     public void start(Stage primaryStage) {
 		/*Ideia: Usar um text Fild para ser uma celula;
-		 * Definir: o tamanho da "célula" e o espaço maximo; 
-		 * */
+		 * Definir: o tamanho da "celula" e o espaco maximo; 
+		 */
 
 		
 		final TextField colunaTF = new TextField("");
@@ -49,7 +49,7 @@ public class TestViewMatriz extends Application  {
 		linhaHBox.getChildren().addAll(new Label("Linha:"), linhaTF);
 		colunaHBox.getChildren().addAll(new Label("Coluna:"), colunaTF);
 		
-		Button ok = new Button("OK");
+		Button ok = new Button("Gerar Matriz");
 		Button BPegar = new Button("Pegar Valores");
 		
 		ok.setMaxSize(80, 100);
@@ -63,7 +63,7 @@ public class TestViewMatriz extends Application  {
         primaryStage.setScene(scene);
         primaryStage.show();
         
-        //Ações dos butoes
+        //Acoes dos butoes
 	    ok.setOnAction(new EventHandler() {
 			
 			public void handle(Event arg0) {
@@ -72,6 +72,9 @@ public class TestViewMatriz extends Application  {
 				coluna = Integer.parseInt(colunaTF.getText());
 				
 				tabela = new TextField[linha][coluna];
+				
+				//remove todas as label's anteriores
+				grade.getChildren().clear();
 				
 		        for(int y = 0; y < linha; y++){
 		            for(int x = 0; x < coluna; x++){
@@ -94,6 +97,7 @@ public class TestViewMatriz extends Application  {
 		        }
 			}//Fim do loop X; 
 		  });
+	    
 	    BPegar.setOnAction(new EventHandler() {
 			
 			public void handle(Event arg0) {
@@ -109,8 +113,6 @@ public class TestViewMatriz extends Application  {
 		            	
 		                str = str + celula.getText() + " ";
 		        
-		                
-
 		            }//Fim do loop X; 
 		            System.out.println(str);
 		            str = "";

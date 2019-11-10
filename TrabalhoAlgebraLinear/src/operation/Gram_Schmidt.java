@@ -1,9 +1,13 @@
-package control;
+package operation;
 
 import model.Sistema;
 import model.Vetor;
 
 public class Gram_Schmidt {
+
+	private static Gram_Schmidt instance = new Gram_Schmidt();
+	private Gram_Schmidt() {}
+	public static Gram_Schmidt getInstance() {return instance;}
 	
 	//Projeta vector1 em vector2, ou seja, Faz com que vector1 seja perpendicular ao vector2
 	private Vetor projection(Vetor vector1,Vetor vector2) {//v = vector1, w = vector2
@@ -51,6 +55,7 @@ public class Gram_Schmidt {
 	//Transforma os vetores em um sistema escalonado
 	private Sistema vectorArrayToSystem(Vetor[] base) {
 		double[][] coordenadas = new double[base.length][base[0].getNumCoordenadas()+1]; //+1, pq tem que ter uma coluan zerada para não bugar o posto
+		
 		for(int i = 0; i< base.length; i++) {
 			int j = 0;
 			for( ; j< base[0].getNumCoordenadas(); j++) {
@@ -58,7 +63,7 @@ public class Gram_Schmidt {
 			}
 			coordenadas[i][j] = 0;
 		}
-		Sistema system = new Sistema(coordenadas,base.length,base[0].getNumCoordenadas()+1);
+		Sistema system = new Sistema(coordenadas,base.length,base[0].getNumCoordenadas());
 		return OperationSystem.getInstance().gauss(system);
 	}
 	

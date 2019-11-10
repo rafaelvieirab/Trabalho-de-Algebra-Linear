@@ -1,61 +1,64 @@
-package control;
+package operation;
 
-import model.Matriz;
 import model.Sistema;
 
 public class OperationSystem {
-	//Singleton
+	
 	private static OperationSystem instance = new OperationSystem();
-	
 	private OperationSystem() {}
-
-	public static OperationSystem getInstance() {
-		return instance;
-	}
-	
-	//Funções
+	public static OperationSystem getInstance() {return instance;}
 	
 	/*Gauss*/
 	public Sistema gauss(Sistema system) {
+		System.out.println("\t\tEscalonamento por Gauss: ");
+		if(system.getNumEq() <= 1 || system.getNumIncog() <= 1)
+			return system;
+		
 		double[][] matrixAmp = system.getMatrizAmpliada();
 		
-		if(system.getNumEq() <= 1)
-			return system;
-		System.out.println("\t\tEscalonamento por Gauss: ");
-		
-		for(int i = 0; i < system.getNumEq(); i++) {
+		for(int i = 0; i < system.getNumEq()-1 && i < system.getNumIncog()-1; i++) {
+			
+			if(matrixAmp[i][i] == 0) //Verifica se o Pivo Atual é igual a 0
+				if(!rowsSwap(matrixAmp,i)) //troca por uma linha onde essa coluna nao é 0
+					continue;//se não encontrar, pode ir para o proximo pivo
 			double pivo = matrixAmp[i][i];
 			System.out.println("\nPivô: " + pivo + "\n");
 			
-			for(int linha = i; linha < system.getNumEq(); linha++) {
-				double firstTermo = matrixAmp[linha][i];	//pega o 1° elemento que vai ser zerado
+			for(int linha = i+1; linha < system.getNumEq(); linha++) {
+				double firstTermo = matrixAmp[linha][i];//1° elemento que vai ser zerado
+				System.out.println("L"+linha+" <- L"+linha+"- ("+firstTermo +"/"+pivo+" * L"+i+")");
 				
-				for(int coluna = i; coluna < system.getNumIncog(); coluna++) {
-					System.out.println("L"+ linha + " <- L" + linha + "- ("+(firstTermo/pivo) +" * L"+ i +")");
-					matrixAmp[linha][coluna] = matrixAmp[linha][coluna] - (firstTermo/pivo) * matrixAmp[i][linha];
-					// L[linha] = L[linha] - (p/q)*Li, onde
-					// 		p (firstTermo) = elemento a[linha][coluna] (Linha que vai ser zerada)
-					// 		q (pivo)= elemento ai[coluna] (Linha do pivo)
-				}
+				for(int coluna = i; coluna < system.getNumIncog()+1; coluna++) 
+					matrixAmp[linha][coluna] -= ((firstTermo/pivo) * matrixAmp[i][coluna]);
 			}
 		}
 		return new Sistema(matrixAmp,system.getNumEq(), system.getNumIncog());
 	}
 	
-	//tem que ajustar
+	//TODO tem que ajustar
 	/*Gauss-Jordan*/
 	public Sistema gaussJordan(Sistema system) {
-		//TODO
-		if(system.getNumEq() <= 1)
+		//TODO 
+		/*E se o numero de linhas for diferente do número de colunas?
+		começa por onde?
+			*pelas Linhas ou
+			*pelas colunas
+		 * */
+		System.out.println("\t\tEscalonamento por Gauss-Jordan: ");
+		if(system.getNumEq() <= 1 || system.getNumIncog() <= 1)
 			return system;
+		
+		//Podemos reduzir isso para gauss(system).getMatrizAmpliada(); ???
 		system = gauss(system);
 		double[][] matrixAmp = system.getMatrizAmpliada();
-
-		System.out.println("\t\tEscalonamento por Gauss: ");
 		
-		for(int i = system.getNumEq()-1; i >=0; i--) {//começa do final
+		int i = (system.getNumEq() < system.getNumIncog()) ? system.getNumEq() : system.getNumIncog();
+		i--;
+		for(; i >=0; i--) {//começa do final (das linahs ou das colunas)
 			double pivo = matrixAmp[i][i];
 			System.out.println("\nPivô: " + pivo + "\n");
+			
+			
 			
 			for(int linha = i-1; linha >= 0; linha--) {
 				double firstTermo = matrixAmp[linha][i];	//pega o 1° elemento que vai ser zerado
@@ -70,6 +73,26 @@ public class OperationSystem {
 			}
 		}
 		return new Sistema(matrixAmp,system.getNumEq(), system.getNumIncog());
+	}
+	
+	/*Se trocar as linhas retorna true, senão false*/
+	private boolean rowsSwap(double[][] matrix, int i) {
+		int j = i+1;
+		while(j < matrix.length && matrix[j][i] == 0)
+			j++;
+			
+		if(j == matrix.length) //A coluna inteira está zerada, logo pode ir para a proxima coluna
+			return false;
+		if(matrix[j][i] != 0) {//Troca linhas
+			System.out.println("L" + i + " <-> L" + j);
+			double aux;
+			for(int coluna = 0; coluna < matrix[0].length; coluna++) {
+				aux = matrix[i][coluna]; //linha que tinha valor 0
+				matrix[i][coluna] = matrix[j][coluna]; //linha que tem o valor diferente de 0
+				matrix[j][coluna] = aux;
+			}
+		}
+		return true;
 	}
 	
 	/*Retorna a Classificação (SPD,SPI ou SI) do sistema*/
@@ -91,7 +114,7 @@ public class OperationSystem {
 		double[][] matrix = system.getMatrizAmpliada(); 
 		int postoAmp = 0;	//número de linhas não nulas da matriz AMPLIADA
 		int postoCoef = 0;	//" "	"	"	"	"	"	"	" 	   COEFICIENTES
-		
+		//olha se a mesma coisa que o de baixo
 		for(int linha = 0; linha < system.getNumEq(); linha++) {
 			int coluna = 0;
 			for( ; coluna < system.getNumIncog(); coluna++) {
@@ -107,6 +130,19 @@ public class OperationSystem {
 			}
 			
 		}
+		
+		/*alternativo - Verifica somente os termos independentes
+		 	* Se o termo daquela linha for igual a 0, então sabemos que a linha é Possivel
+		 	* Se o termo daquela linha for diferente de 0, verifica se a linha está zerada
+		 		* Se sim, então a linha é possivel 
+		 		* Senão, então o sistema é impossivel 
+		 */
+		for(int linha = 0; linha < system.getNumEq(); linha++) 
+			if(matrix[linha][system.getNumIncog()] != 0)  //termo independente != 0
+				for(int coluna = 0; coluna < system.getNumIncog(); coluna++)  //verifica se pelo menos um dos coeficientes != 0
+					if(matrix[linha][coluna] != 0)
+						break;
+		
 		if(postoAmp == postoCoef) {
 			if(postoAmp == system.getNumIncog())
 				return 0; //  Sistema Possivel e Determinado
