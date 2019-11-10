@@ -47,18 +47,18 @@ public class OperationSystem {
 		System.out.println("\t\tEscalonamento por Gauss-Jordan: ");
 		if(system.getNumEq() <= 1 || system.getNumIncog() <= 1)
 			return system;
-		
-		//Podemos reduzir isso para gauss(system).getMatrizAmpliada(); ???
-		system = gauss(system);
-		double[][] matrixAmp = system.getMatrizAmpliada();
+		double[][] matrixAmp = gauss(system).getMatrizAmpliada();
 		
 		int i = (system.getNumEq() < system.getNumIncog()) ? system.getNumEq() : system.getNumIncog();
 		i--;
-		for(; i >=0; i--) {//começa do final (das linahs ou das colunas)
+		for(; i >=0; i--) {//começa do final (das linhas ou das colunas)
+			//TODO - trocar a ordem da 
+			if(matrixAmp[i][i] == 0) //Verifica se o Pivo Atual é igual a 0
+				if(!rowsSwap(matrixAmp,i)) //troca por uma linha onde essa coluna nao é 0
+					continue;//se não encontrar, pode ir para o proximo pivo
+			
 			double pivo = matrixAmp[i][i];
 			System.out.println("\nPivô: " + pivo + "\n");
-			
-			
 			
 			for(int linha = i-1; linha >= 0; linha--) {
 				double firstTermo = matrixAmp[linha][i];	//pega o 1° elemento que vai ser zerado
@@ -97,6 +97,7 @@ public class OperationSystem {
 	
 	/*Retorna a Classificação (SPD,SPI ou SI) do sistema*/
 	public String analyzeSolucion(Sistema system) {
+		system = gaussJordan(system);
 		int analyze = analyzePost(system); 
 		if (analyze == 0) 
 			return "Possui somente uma única solução!\nSistema Possivel e Determinado";
@@ -110,45 +111,28 @@ public class OperationSystem {
 	
 	/*Analisa o posto das matrizes ampliada e dos coeficientes*/
 	public int analyzePost(Sistema system) {
-		Sistema systemEscalonado = gaussJordan(system); //Escalona o sistema
-		double[][] matrix = system.getMatrizAmpliada(); 
-		int postoAmp = 0;	//número de linhas não nulas da matriz AMPLIADA
-		int postoCoef = 0;	//" "	"	"	"	"	"	"	" 	   COEFICIENTES
-		//olha se a mesma coisa que o de baixo
-		for(int linha = 0; linha < system.getNumEq(); linha++) {
-			int coluna = 0;
-			for( ; coluna < system.getNumIncog(); coluna++) {
-				if(matrix[linha][coluna] != 0)
-					break;
-			}
-			//se não chegou no último elemento(termo independente), então alguém é diferente de 0
-			if(coluna < system.getNumIncog()-1) {  
-				postoAmp++;
-				//se não chegou no último coeficiente, então alguém é diferente de 0
-				if(coluna < system.getNumIncog()-2)
-					postoCoef++;
-			}
-			
-		}
+		double[][] matrix = system.getMatrizAmpliada(); //Escalona o sistema
+		int numLinhasZeradas = 0;
 		
-		/*alternativo - Verifica somente os termos independentes
-		 	* Se o termo daquela linha for igual a 0, então sabemos que a linha é Possivel
-		 	* Se o termo daquela linha for diferente de 0, verifica se a linha está zerada
-		 		* Se sim, então a linha é possivel 
-		 		* Senão, então o sistema é impossivel 
-		 */
-		for(int linha = 0; linha < system.getNumEq(); linha++) 
-			if(matrix[linha][system.getNumIncog()] != 0)  //termo independente != 0
-				for(int coluna = 0; coluna < system.getNumIncog(); coluna++)  //verifica se pelo menos um dos coeficientes != 0
+		for(int linha = 0; linha < system.getNumEq(); linha++) {
+			if(matrix[linha][system.getNumIncog()] != 0) {  //termo independente != 0
+				int coluna = 0;
+				for(; coluna < system.getNumIncog(); coluna++)   //verifica se pelo menos um dos coeficientes != 0
 					if(matrix[linha][coluna] != 0)
 						break;
-		
-		if(postoAmp == postoCoef) {
-			if(postoAmp == system.getNumIncog())
-				return 0; //  Sistema Possivel e Determinado
-			return 1; //  Sistema Impossivel e Determinado
+				if(coluna < system.getNumIncog())  // Então há um elemento na linha que é != 0, logo S.I
+					return 2; // Sistema Impossivel
+			}else {
+				int coluna = 0;
+				while(coluna < system.getNumIncog() && matrix[linha][coluna] == 0) 
+					coluna++;
+				if(coluna == system.getNumIncog())
+					numLinhasZeradas++;
+			}
 		}
-		return 2;//  Sistema Impossivel
+		if((system.getNumEq() - numLinhasZeradas) < system.getNumIncog())
+			return 1; // Sistema Impossivel e Determinado
+		return 0; // Sistema Possivel e Determinado
 	}
 
 	//Terminar .....
@@ -156,12 +140,29 @@ public class OperationSystem {
 	public void solucions(Sistema system) {
 		//TODO
 		system = gaussJordan(system);
-		if(analyzePost(system) == 2)// Sistema Impossivel
+		int analyzePost = analyzePost(system);
+		if(analyzePost == 2) // Sistema Impossivel
 			System.out.println("Não existe solução!");
 		
-		for(int linha = 0, coluna = 0; linha < system.getNumEq() && coluna < system.getNumIncog(); linha++, coluna++) {
-			System.out.println("a["+ linha + "]" +"["+ coluna+ "]" +  
-					           "" + system.getCoef(linha, coluna) + " = " + system.getCoef(linha, system.getNumIncog()-1));
+		else if(analyzePost == 0) //S.P.D.
+			for(int pos = 0; pos < system.getNumEq(); pos++) 
+				System.out.println(system.getCoef(pos, pos)+"*x"+ pos +" = "+system.getTermo(pos));
+		
+		else { //S.P.I.
+			//TODO - Falta fazer isso
+			double matrix[][] = system.getMatrizAmpliada();
+			String coeficientes;
+			for(int pos = 0; pos < system.getNumEq() && pos < system.getNumIncog() ; pos++) { 
+				coeficientes = "";
+				//pegar todos os outros coeficintes diferentes de 0;
+				for(int coef = 0; coef < pos; coef++) 
+					if(matrix[pos][coef] != 0)
+						coeficientes += matrix[pos][coef] + "*x" + pos;
+				for(int coef = pos+1; coef < system.getNumIncog(); coef++) 
+					if(matrix[pos][coef] != 0)
+						coeficientes += "+(" + (-matrix[pos][coef]) + "*x" + pos + ")";
+				System.out.println(system.getCoef(pos, pos)+"*x"+ pos+" = "+system.getTermo(pos) + coeficientes);
+			}
 		}
 	}
 	
