@@ -60,4 +60,12 @@ public class Vetor {
 		this.coordenadas = coordenadas;
 	}
 	
+	@Override
+	public String toString() {
+		String acc = "(";
+		for(double coordenada : coordenadas)
+			acc+= coordenada +",";
+		acc += ")\n";
+		return acc;
+	}
 }

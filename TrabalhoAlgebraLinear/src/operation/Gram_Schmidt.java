@@ -10,23 +10,23 @@ public class Gram_Schmidt {
 	public static Gram_Schmidt getInstance() {return instance;}
 	
 	//Projeta vector1 em vector2, ou seja, Faz com que vector1 seja perpendicular ao vector2
-	private Vetor projection(Vetor vector1,Vetor vector2) {//v = vector1, w = vector2
+	private Vetor projection(Vetor v,Vetor w) {//v = vector1, w = vector2
 		//proj(v,w) = cw = 	((v*w) /(w*w)) * w
-		double vw = productInternal(vector1, vector2);
-		double ww= vector2.modulo();
-		return vector2.multiplicaEscalar(vw/ww);
+		double vw = productInternal(v, w);
+		double ww= w.modulo();
+		Vetor cw = w.multiplicaEscalar(vw/ww);
+		return cw;
 	}
 	
 	//Ortoganaliza a base
 	public Vetor[] orthogonalization(Vetor[] base) {
-		//Obs.: O produto que vem na base B precisa ser o usual, ou pode ser especificado?.
 		base = verificaDependencia(base); //implementar depois
+		int lengthBase = base[0].getNumCoordenadas();
+		Vetor[] newBase = new Vetor[lengthBase];
 		
-		Vetor[] newBase = new Vetor[base.length];
-		
-		for(int posAtual=0; posAtual<base.length ; posAtual++) {
+		for(int posAtual = 0; posAtual < lengthBase ; posAtual++) {
 			newBase[posAtual] = base[posAtual];
-			for(int anterior=0; anterior<posAtual ; anterior++) 
+			for(int anterior = 0; anterior < posAtual ; anterior++) 
 				newBase[posAtual] = subtraction(newBase[posAtual], projection(base[posAtual], base[anterior])); 
 		}
 		return newBase;
@@ -46,7 +46,7 @@ public class Gram_Schmidt {
 		//TODO
 		//Verifica se cada vetor é combinação linear dos outros
 		//=> Basta transformar em um sistema e escalonar
-		//=> Se tiver menos linhas não zeradas do que colunas(coordenadas), basta completar com as que falta 
+		//=> Se tiver menos linhas não zeradas do que colunas(coordenadas), basta completar com as que faltam 
 		
 		Sistema system = vectorArrayToSystem(base);
 		return completeBase(system);
@@ -87,14 +87,14 @@ public class Gram_Schmidt {
 	 *  e antes dele estiverem várias linhas zeradas).
 	 */
 		double[][] array = system.getMatrizCoef();
-		for(int i =0 ; i< array.length; i++) {
-			
+		
+		//Isso ainda é preciso?
+		for(int i = 0 ; i < array.length; i++) 
 			if(array[i][i] == 0) {//Sobrescreve a linha atual, criando o vetor independe que estava faltando
 				for(int j = 0; j < system.getNumIncog(); j++) 
 					array[i][j] = 0;
 				array[i][i] = 1;
 			}
-		}
 		
 		//Transformando o array no Vetor[]
 		Vetor[] vectorArray = new Vetor[array.length];
@@ -103,7 +103,7 @@ public class Gram_Schmidt {
 		return vectorArray;
 	}
 	
-	//Não está sendo usado
+	//TODO - Não está sendo usado
 	//Verifica se dois vetores são ortogonais entre si
 	public boolean isOrthogonal(Vetor vector1,Vetor vector2) {
 		return productInternal(vector1, vector2) == 0;
