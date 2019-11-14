@@ -1,4 +1,6 @@
-package testes;
+package view;
+
+import javax.swing.JOptionPane;
 
 import javafx.application.Application;
 import javafx.event.Event;
@@ -19,17 +21,17 @@ import util.Ultilitarios;
 
 public class TestViewMatriz extends Application  {
 	
-	private  int linhaMatrA = 0;
-	private  int colunaMatrA = 0;
-	private  int linhaMatrB = 0;
-	private  int colunaMatrB = 0;
+	private  int linhaMatrA = 3;
+	private  int colunaMatrA = 3;
+	private  int linhaMatrB = 3;
+	private  int colunaMatrB = 3;
 	
 	private String opcaoSelecionada = "";
 	private Label simboloOperacao = new Label("");
 	
-	private TextField TabelaMatrizA[][];
-	private TextField TabelaMatrizB[][];
-	
+	private TextField TabelaMatrizA[][] = new TextField[linhaMatrA][colunaMatrA];
+	private TextField TabelaMatrizB[][] = new TextField[linhaMatrB][colunaMatrB];
+
 	private GridPane GPRespMatrA = new GridPane();
 	private GridPane GPRespMatrB = new GridPane();
 	
@@ -55,8 +57,7 @@ public class TestViewMatriz extends Application  {
 
 		painelAbas.getTabs().addAll(AbaMatrix, aba2, aba3);
 		
-		Scene scene = new Scene(painelAbas, 900, 600); 
-		// Largura X altura
+		Scene scene = new Scene(painelAbas, 900, 600);// Largura X altura
 		
         primaryStage.setTitle("Trabalho de Algebra Linear");
         primaryStage.setScene(scene);
@@ -76,15 +77,20 @@ public class TestViewMatriz extends Application  {
 		
 		final TextField TFColunaMatrA = new TextField("");
 		final TextField TFLinhaMatrA = new TextField("");
+		TFLinhaMatrA.setMaxSize(DimensoesWidth, DimensoesHeight);
+		TFColunaMatrA.setMaxSize(DimensoesWidth, DimensoesHeight);
 		
-		final TextField TFcolunaMatrB = new TextField("");
+		final TextField TFColunaMatrB = new TextField("");
 		final TextField TFLinhaMatrB = new TextField("");
+		TFLinhaMatrB.setMaxSize(DimensoesWidth, DimensoesHeight);
+		TFColunaMatrB.setMaxSize(DimensoesWidth, DimensoesHeight);
 		
-	
 		GridPane GPMatrizA = new GridPane();
 		GridPane GPMatrizB = new GridPane(); 
 		GridPane GPMatrizResposta = new GridPane();
 		
+		buildMatriX(GPMatrizA, TabelaMatrizA, linhaMatrA, colunaMatrA);
+		buildMatriX(GPMatrizB, TabelaMatrizB, linhaMatrB, colunaMatrB);
 		
 		/* Uma Linha pode ser representada pelo HBox e uma coluna por VBox;
 		 * 	A ideia aqui é organizar tudo que representa a matriz A (bottoes, TextField, matrizA) em uma 
@@ -107,10 +113,21 @@ public class TestViewMatriz extends Application  {
 		
 		Button BGerarMatrixA = new Button("Gerar");
 		Button BGerarMatrixB = new Button("Gerar");
-		Button BCalular = new Button("Calcular operação");
+		Button BCalular = new Button("Calcular opera磯");
 
 		BGerarMatrixA.setMaxSize(80, 100);
 		BGerarMatrixB.setMaxSize(80, 100);
+		
+		HBoxMatrizA.getChildren().addAll(new Label("Linha:"), TFLinhaMatrA, new Label ("  X"),new Label("Coluna:"), TFColunaMatrA, BGerarMatrixA);
+		HBoxMatrizB.getChildren().addAll(new Label("Linha:"), TFLinhaMatrB, new Label ("  X"),new Label("Coluna:"), TFColunaMatrB, BGerarMatrixB);
+		
+		VBoxColunaA.getChildren().addAll(new Label("Matriz A"),HBoxMatrizA,GPMatrizA);
+		VBoxColunaB.getChildren().addAll(new Label("Matriz B"),HBoxMatrizB,GPMatrizB);
+
+		//VBoxColunaA.setAlignment(Pos.CENTER);
+		//VBoxColunaB.setAlignment(Pos.CENTER);
+		
+		HBoxLinha.getChildren().addAll(VBoxColunaA,VBoxColunaB);
 		
 		//Butões para realizar ações em nas matrizes
 		//Open - Organizando Button
@@ -131,98 +148,61 @@ public class TestViewMatriz extends Application  {
 		HBoxOpcoesA.getChildren().addAll(BSomaMatrizes, BSubMatrizes, BMultEscalar, BMultiplicacaoMatrizes,BTranposicao);
 		HBoxOpcoesB.getChildren().addAll(BPotencia,BInversa,BMatrCofatora,BMatrAdjunta,BDeterminante);
 		//Close - Organizando Button
-		
-		
-        raiz.getChildren().addAll( HBoxOpcoesA, HBoxOpcoesB, HBoxLinha, BCalular, HBoxResultado);
 
-        AbaMatrix.setContent(raiz); // adicionando toda as opções na Aba Matriz
-        AbaMatrix.setClosable(false);
         
+        raiz.getChildren().addAll(HBoxOpcoesA, HBoxOpcoesB, HBoxLinha, BCalular, HBoxResultado);
+        
+        AbaMatrix.setContent(raiz); // adicionando toda as opcoes na Aba Matriz
+        AbaMatrix.setClosable(false);
 		
         //Acoes dos butoes
 	    BGerarMatrixA.setOnAction(new EventHandler() {
 			
 			public void handle(Event arg0) {
-				TextField celula;
-			
-				if(TFLinhaMatrA.getText().equals("") || TFColunaMatrA.getText().equals("")) {
-					// TODO: Um erro 
-					System.err.println("O campo linha ou coluna estão em branco!!!");
-					return;
+				try {
+					if(TFLinhaMatrA.getText().equals("") || TFColunaMatrA.getText().equals(""))
+						throw new Exception("Digite algum valor númerico!!!");
+					
+					linhaMatrA = Integer.parseInt(TFLinhaMatrA.getText());
+					colunaMatrA = Integer.parseInt(TFColunaMatrA.getText());
+					
+					if(linhaMatrA < 0 || colunaMatrA < 0) 
+						throw new Exception("Digite apenas valores númericos positivos");
+					
+					TabelaMatrizA = new TextField[linhaMatrA][colunaMatrA];
+					GPMatrizA.getChildren().clear();//remove todas as label's anteriores
+					
+					buildMatriX(GPMatrizA, TabelaMatrizA, linhaMatrA, colunaMatrA); //gera a tabela com os TextField's
+					
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Erro ao gerar matriz A" , JOptionPane.ERROR_MESSAGE);
 				}
-				
-			
-				linhaMatrA = Integer.parseInt(TFLinhaMatrA.getText());
-				colunaMatrA = Integer.parseInt(TFColunaMatrA.getText());
-				
-				TabelaMatrizA = new TextField[linhaMatrA][colunaMatrA];
-				
-				//remove todas as label's anteriores
-				GPMatrizA.getChildren().clear();
-				
-		        for(int y = 0; y < linhaMatrA; y++){
-		            for(int x = 0; x < colunaMatrA; x++){
-
-		            	celula = new TextField();
-		            	TabelaMatrizA[y][x] = celula;
-		            	
-		                // Create a new TextField in each Iteration
-		                celula.setPrefHeight(50);
-		                celula.setPrefWidth(50);
-		                //celula.setAlignment(Pos.CENTER);
-		                celula.setEditable(true);
-		                celula.setText("0");
-
-		                // Iterate the Index using the loops
-		                GPMatrizA.setRowIndex(celula,y);
-		                GPMatrizA.setColumnIndex(celula, x);    
-		                GPMatrizA.getChildren().add(celula);
-		            }
-		        }
-			}//Fim do loop X; 
+			}//Fim do loop handle(); 
 		  });
 	    
-		BGerarMatrixB.setOnAction(new EventHandler() {
+	    BGerarMatrixB.setOnAction(new EventHandler() {
 					
 			public void handle(Event arg0) {
-				TextField celula;
-			
-				if(TFLinhaMatrB.getText().equals("") || TFcolunaMatrB.getText().equals("")) {
-					System.err.println("O campo linha ou coluna estão em branco!!!");
-					return;
+				try {
+					if(TFLinhaMatrA.getText().equals("") || TFColunaMatrA.getText().equals(""))
+						throw new Exception("Digite algum valor númerico!!!");
+					
+					linhaMatrB = Integer.parseInt(TFLinhaMatrB.getText());
+					colunaMatrB = Integer.parseInt(TFColunaMatrB.getText());
+
+					if(linhaMatrB < 0 || colunaMatrB < 0) 
+						throw new Exception("Digite apenas valores númericos positivos");
+					
+					TabelaMatrizB = new TextField[linhaMatrB][colunaMatrB];
+					GPMatrizB.getChildren().clear();//remove todas as label's anteriores
+					
+					buildMatriX(GPMatrizB, TabelaMatrizB,linhaMatrB,colunaMatrB);
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Erro ao gerar matriz B" , JOptionPane.ERROR_MESSAGE);
 				}
-				
-			
-				linhaMatrB = Integer.parseInt(TFLinhaMatrB.getText());
-				colunaMatrB = Integer.parseInt(TFcolunaMatrB.getText());
-				
-				TabelaMatrizB = new TextField[linhaMatrB][colunaMatrB];
-				
-				//remove todas as label's anteriores
-				GPMatrizB.getChildren().clear();
-				
-		        for(int y = 0; y < linhaMatrB; y++){
-		            for(int x = 0; x < colunaMatrB; x++){
-	
-		            	celula = new TextField();
-		            	TabelaMatrizB[y][x] = celula;
-		            	
-		                // Create a new TextField in each Iteration
-		                celula.setPrefHeight(50);
-		                celula.setPrefWidth(50);
-		                //celula.setAlignment(Pos.CENTER);
-		                celula.setEditable(true);
-		                celula.setText("0");
-	
-		                // Iterate the Index using the loops
-		                GPMatrizB.setRowIndex(celula,y);
-		                GPMatrizB.setColumnIndex(celula, x);    
-		                GPMatrizB.getChildren().add(celula);
-		            }
-		        }
-			}//Fim do loop X; 
+			} // Fim do handle
 		  });
-	  
+	    
 		BCalular.setOnAction(new EventHandler() {
 
 			@Override
@@ -252,14 +232,12 @@ public class TestViewMatriz extends Application  {
 					for(int y = 0; y < linhaMatrB; y++){
 			            for(int x = 0; x < colunaMatrB; x++){
 
-			            	celula = new TextField();
-			            	
+			            	celula = new TextField();		            	
 			                
 			                celula.setPrefHeight(50);
 			                celula.setPrefWidth(50);
 			                celula.setEditable(false);
 			                celula.setText("1");
-
 			            
 			                GPMatrizResposta.setRowIndex(celula,y);
 			                GPMatrizResposta.setColumnIndex(celula, x);    
@@ -285,22 +263,8 @@ public class TestViewMatriz extends Application  {
 			public void handle(Event arg0) {
 				/*Essa info só aparecerá quando for clicado a opcao soma*/
 				
-				TFLinhaMatrA.setMaxSize(DimensoesWidth, DimensoesHeight);
-				TFColunaMatrA.setMaxSize(DimensoesWidth, DimensoesHeight);
-				TFLinhaMatrB.setMaxSize(DimensoesWidth, DimensoesHeight);
-				TFcolunaMatrB.setMaxSize(DimensoesWidth, DimensoesHeight);
 				
-				HBoxMatrizA.getChildren().addAll(new Label("Linha:"), TFLinhaMatrA, new Label ("X"),new Label("Coluna:"), TFColunaMatrA, BGerarMatrixA);
-				HBoxMatrizB.getChildren().addAll(new Label("Linha:"), TFLinhaMatrB, new Label ("X"),new Label("Coluna:"), TFcolunaMatrB, BGerarMatrixB);
 				
-				VBoxColunaA.getChildren().addAll(new Label("Matriz A"),HBoxMatrizA,GPMatrizA);
-				VBoxColunaB.getChildren().addAll(new Label("Matriz B"),HBoxMatrizB,GPMatrizB);
-
-				//VBoxColunaA.setAlignment(Pos.CENTER);
-				//VBoxColunaB.setAlignment(Pos.CENTER);
-				
-				HBoxLinha.getChildren().addAll(VBoxColunaA,VBoxColunaB);
-
 				opcaoSelecionada = Ultilitarios.SOMA;
 				simboloOperacao.setText("+");
 				
@@ -318,6 +282,52 @@ public class TestViewMatriz extends Application  {
 			}
 			
 		});
+	}
+	
+	private void buildMatriX(GridPane GPMatriz, TextField[][] TabelaMatriz,int linha, int coluna) {
+    	TextField celula;
+    	for(int y = 0; y < linha; y++)
+    		for(int x = 0; x < coluna; x++){
+
+    			celula = new TextField();
+    			TabelaMatriz[y][x] = celula;
+
+    			// Create a new TextField in each Iteration
+    			celula.setPrefHeight(50);
+    			celula.setPrefWidth(50);
+    			//celula.setAlignment(Pos.CENTER);
+    			celula.setEditable(true);
+    			celula.setText("0");
+
+    			// Iterate the Index using the loops
+    			GPMatriz.setRowIndex(celula,y);
+    			GPMatriz.setColumnIndex(celula, x);    
+    			GPMatriz.getChildren().add(celula);
+    		}
+    	
+    }
+	
+	private double[][] converteGridPaneINMatriz(TextField[][] TabelaMatriz,int linha, int coluna){
+		
+		try {
+			if(linha < 1 && coluna < 1) {
+				throw new Exception("Gere uma matriz com linhas e colunas maiores que 0");
+			}
+			double[][] matrix = new double[linha][coluna];
+			for(int i = 0; i< linha; i++) {
+				for(int j = 0; j< linha; j++) {
+					matrix[i][j] = Double.parseDouble(TabelaMatriz[i][j].getText());
+				}
+			}
+			return matrix;
+		}catch (Exception e) {
+			if(e.getMessage().equals(""))
+				JOptionPane.showMessageDialog(null, "Digite apenas numeros na tabela", "Erro ao gerar matriz A" , JOptionPane.ERROR_MESSAGE);
+			else
+				JOptionPane.showMessageDialog(null, e.getMessage(), "Erro ao gerar matriz A" , JOptionPane.ERROR_MESSAGE);
+		}
+		
+		return null;
 	}
 	
 	private void aba2() {
