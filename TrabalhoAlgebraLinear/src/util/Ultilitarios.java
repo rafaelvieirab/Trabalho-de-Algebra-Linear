@@ -13,5 +13,5 @@ public class Ultilitarios {
 	public static String COFATORA = "COFATORA";
 	public static String ADJUNTA = "ADJUNTA";
 	public static String DETERMINANTE = "DETERMINANTE";
-
+	
 }
