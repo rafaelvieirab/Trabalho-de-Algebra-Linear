@@ -166,10 +166,6 @@ public class OperationMatriz {
 	
 	/*Potência*/
 	public Matriz potency(Matriz matrix, int expoente) {
-		if(matrix == null) {
-			error("Potência de Matrizes", "A matriz está vazia");
-			return null;
-		}		
 		if(!matrix.isSquare()) { 
 			error("Potência de Matriz","A matriz não é quadrada");
 			return null;
