@@ -1,47 +1,164 @@
-package control;
+package view;
 
 import javax.swing.JOptionPane;
-
-import javafx.event.ActionEvent;
+import javafx.application.Application;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import model.Matriz;
 import operation.OperationMatriz;
 import util.Ultilitarios;
-import view.TelaAbas;
-import view.TesteJanelas;
 
-public class TesteMatrizController {
-	TesteJanelas matrizView = new TesteJanelas();
-	/*
-	private void baqweqw() {
+public class TesteJanelas extends Application{
+	
+	public  int linhaMatrA = 3;
+	public  int colunaMatrA = 3;
+	public  int linhaMatrB = 3;
+	public  int colunaMatrB = 3;
+	
+	private String opcaoSelecionada = "";
+	private Label simboloOperacao = new Label("");
+	
+	public TextField TabelaMatrizA[][] = new TextField[linhaMatrA][colunaMatrA];
+	public TextField TabelaMatrizB[][] = new TextField[linhaMatrB][colunaMatrB];
+
+	private GridPane GPRespMatrA = new GridPane();
+	private GridPane GPRespMatrB = new GridPane();
+	
+	//TODO teste 
+	public Button BTScreenSystem = new Button("Alternar para a tela de Sistemas");  
+	public Button BTScreenVector = new Button("Alternar para a tela de Gran-Schmidt");
+	
+	public Button BGerarMatrixA = new Button("Gerar");
+	public Button  BGerarMatrixB = new Button("Gerar");
+	public Button  BCalular = new Button("Calcular operacao");
+
+	public Button  BSomaMatrizes = new Button("Soma A e B");
+	public Button BSubMatrizes = new Button("Subtração A e B");
+	public Button BMultEscalar = new Button("Multiplicar A por Escalar");
+	public Button BMultiplicacaoMatrizes = new Button("Multiplica A e B");
+	public Button BTranposicao = new Button("Tranposicao Matriz");
+	public Button BPotencia = new Button("Potencia de uma Matriz");
+	public Button BInversa = new Button("Inversa de uma Matriz");
+	public Button BMatrCofatora = new Button("Matriz Cofatora");
+	public Button BMatrAdjunta = new Button("Matriz Adjunta");
+	public Button BDeterminante = new Button("Determinantes");
+	
+	public GridPane GPMatrizA = new GridPane();
+	public GridPane GPMatrizB = new GridPane(); 
+	public GridPane GPMatrizResposta = new GridPane();
+	
+	private Stage stage;
+	public Stage getStage() {return stage;}
+	public void setStage(Stage stage) {this.stage = stage;}
+	
+	public TextField TFColunaMatrA = new TextField("3");
+	public TextField TFLinhaMatrA = new TextField("3");
+	
+	
+	public static void main(String[] args) {
+		launch(args);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void start(Stage stagePrincipal) throws Exception {
+		HBox HBButtonScreen = new HBox(50);
+		HBButtonScreen.getChildren().addAll(BTScreenSystem, BTScreenVector);
 		
-		matrizView.BTScreenSystem.setOnAction(new EventHandler() {
-			@Override
-			public void handle(Event arg0) {
-				TelaAbas abas = new TelaAbas();
-				abas.start(matrizView.getStage());
-				
-			}
-		});
+		int DimensoesHeight =  20; // altura
+		int DimensoesWidth = 50 ; // largura
 		
+		TFLinhaMatrA.setMaxSize(DimensoesWidth, DimensoesHeight);
+		TFColunaMatrA.setMaxSize(DimensoesWidth, DimensoesHeight);
+		
+		final TextField TFColunaMatrB = new TextField("3");
+		final TextField TFLinhaMatrB = new TextField("3");
+		TFLinhaMatrB.setMaxSize(DimensoesWidth, DimensoesHeight);
+		TFColunaMatrB.setMaxSize(DimensoesWidth, DimensoesHeight);
+		
+		
+		
+		geraTabelaMatriz(GPMatrizA, TabelaMatrizA, linhaMatrA, colunaMatrA);
+		geraTabelaMatriz(GPMatrizB, TabelaMatrizB, linhaMatrB, colunaMatrB);
+		
+		ScrollPane SPMatrizA = new ScrollPane(GPMatrizA);
+		SPMatrizA.setMaxHeight(200);
+		SPMatrizA.setMaxWidth(375);
+		
+		ScrollPane SPMatrizB = new ScrollPane(GPMatrizB);
+		SPMatrizB.setMaxHeight(200);
+		SPMatrizB.setMaxWidth(375);
+		
+		VBox VBoxColunaA = new VBox(10);
+		VBox VBoxColunaB = new VBox(10);
+		
+		VBoxColunaB.setTranslateX(100);// TODO: O que acontece quando usa-se esse valor?
+	
+		HBox HBoxLinha = new HBox(10);
+		HBox HBoxMatrizA = new HBox();
+		HBox HBoxMatrizB = new HBox();
+		HBox HBoxResultado = new HBox(20);
+		
+		
+		BGerarMatrixA.setMaxSize(80, 100);
+		BGerarMatrixB.setMaxSize(80, 100);
+		
+		HBoxMatrizA.getChildren().addAll(new Label("Linha:  "), TFLinhaMatrA, new Label ("  X  "),new Label("Coluna:"), TFColunaMatrA, new Label("  "), BGerarMatrixA);
+		HBoxMatrizB.getChildren().addAll(new Label("Linha:  "), TFLinhaMatrB, new Label ("  X  "),new Label("Coluna:"), TFColunaMatrB, new Label("  "), BGerarMatrixB);
+		
+		
+//		VBoxColunaA.getChildren().addAll(new Label("\t\t\t\tMatriz A"),HBoxMatrizA,SPMatrizA);
+		VBoxColunaB.getChildren().addAll(new Label("\t\t\t\tMatriz B"),HBoxMatrizB,SPMatrizB);
+
+		//VBoxColunaA.setAlignment(Pos.CENTER);
+		//VBoxColunaB.setAlignment(Pos.CENTER);
+		
+		HBoxLinha.getChildren().addAll(VBoxColunaA,VBoxColunaB);
+		
+		//Butões para realizar ações em nas matrizes
+		//Open - Organizando Button
+		HBox HBoxOpcoesA = new HBox(30);
+		HBox HBoxOpcoesB = new HBox(30);
+		
+		HBoxOpcoesA.getChildren().addAll(BSomaMatrizes, BSubMatrizes, BMultEscalar, BMultiplicacaoMatrizes,BTranposicao);
+		HBoxOpcoesB.getChildren().addAll(BPotencia,BInversa,BMatrCofatora,BMatrAdjunta,BDeterminante);
+		//Close - Organizando Button
+
+		VBox raiz = new VBox(10);
+		raiz.setTranslateX(10);
+		raiz.setTranslateY(20);
+		
+        raiz.getChildren().addAll(HBButtonScreen, HBoxLinha, HBoxOpcoesA, HBoxOpcoesB, BCalular, HBoxResultado);
+        ScrollPane SPRaiz = new ScrollPane(raiz);
+        
+        Scene scene = new Scene(SPRaiz, 900, 600);// Largura X altura
+        stagePrincipal.setTitle("Trabalho de Algebra Linear");
+		stagePrincipal.setScene(scene);
+		stagePrincipal.show();
+		setStage(stagePrincipal);
+
         //Acoes dos butoes
-		matrizView.BGerarMatrixA.setOnAction(new EventHandler() {
+	    BGerarMatrixA.setOnAction(new EventHandler() {
 		
 			public void handle(Event arg0) {
 				try {
 					if(TFLinhaMatrA.getText().equals("") || TFColunaMatrA.getText().equals(""))
 						throw new Exception("Digite algum valor númerico!!!");
 					
-					matrizView.linhaMatrA = Integer.parseInt(matrizView.TFLinhaMatrA.getText());
-					matrizView.colunaMatrA = Integer.parseInt(TFColunaMatrA.getText());
+					linhaMatrA = Integer.parseInt(TFLinhaMatrA.getText());
+					colunaMatrA = Integer.parseInt(TFColunaMatrA.getText());
 					
-					if(matrizView.linhaMatrA < 0 || matrizView.colunaMatrA < 0) 
+					if(linhaMatrA < 0 || colunaMatrA < 0) 
 						throw new Exception("Digite apenas valores númericos positivos");
 					
 					TabelaMatrizA = new TextField[linhaMatrA][colunaMatrA];
@@ -388,7 +505,7 @@ public class TesteMatrizController {
 			}
 		});//fim do EventHandler
 		
-	}// FIM do metodo principal
+	}
 
 	//Recebe uma matriz e retorna um GridPane formado por Label's com os valores da Matriz recebida 
 	private GridPane transformaMatrizEmGridPaneLabel(Matriz matrix) {
@@ -489,5 +606,5 @@ public class TesteMatrizController {
 		
 		return null;
 	}
-	*/
+	
 }

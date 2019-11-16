@@ -138,25 +138,36 @@ public class OperationSystem {
 	}
 
 	/*Apresenta as possiveis soluções*/
-	public void solucions(Sistema system) {
+	public String solucions(Sistema system) {
 		system = gaussJordan(system);
 		int analyzePost = analyzePost(system);
-		if(analyzePost == 2) // Sistema Impossivel
-			System.out.println("Não existe solução!");
-		
-		else if(analyzePost == 0) //S.P.D.
-			for(int pos = 0; pos < system.getNumEq(); pos++)
-					System.out.println("x"+ pos +" = "+system.getTermo(pos));	
+		String solucao = "";
+		if(analyzePost == 2) {// Sistema Impossivel
+			solucao = "Não existe solução!";
+			System.out.println(solucao);
+		}
+		else if(analyzePost == 0) //S.P.D.{
+			for(int pos = 0; pos < system.getNumEq(); pos++) {
+				solucao += "x"+ pos +" = "+ system.getTermo(pos) + "\n";
+				System.out.println("x"+ pos +" = "+system.getTermo(pos));	
+			}
 		
 		else { //S.P.I.
 			double matrix[][] = system.getMatrizAmpliada();
 			for(int pos = 0; pos < system.getNumEq() && pos < system.getNumIncog() ; pos++) { 
-				if(matrix[pos][pos] == 0) //coeficiente == 0
+				
+				if(matrix[pos][pos] == 0) { //coeficiente == 0
+					solucao += "x"+ pos + " = x" + pos + "\n";
 					System.out.println("x"+ pos + " = x" + pos);
-				else
+				}
+				else {
+					solucao += "x"+ pos+" = "+system.getTermo(pos) + returnCoef(matrix,pos) + "\n";
 					System.out.println("x"+ pos+" = "+system.getTermo(pos) + returnCoef(matrix,pos));
+				}
+				
 			}
 		}
+		return solucao;
 	}
 	
 	/*Retorna todos os coeficientes diferentes de 0, e da posição dada*/

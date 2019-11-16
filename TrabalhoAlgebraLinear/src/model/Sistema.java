@@ -7,7 +7,7 @@ public class Sistema {
 	private double[] termo; //Matriz dos Termos Independentes
 	
 	//Construtor padrão
-	public Sistema(int numEq, int numIncog, double[][] coef, double[] termo) {
+	public Sistema(double[][] coef, double[] termo, int numEq, int numIncog) {
 		this.numEq = numEq;
 		this.numIncog = numIncog;
 		this.coef = coef;

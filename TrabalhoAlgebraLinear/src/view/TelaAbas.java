@@ -6,11 +6,11 @@ import javafx.application.Application;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
@@ -19,26 +19,31 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import model.Matriz;
-import operation.OperationMatriz;
+import model.*;
+import operation.*;
 import util.Ultilitarios;
 
-public class TelaMatriz extends Application  {
-	
+public class TelaAbas extends Application  {
+	//Matriz
 	private  int linhaMatrA = 3;
 	private  int colunaMatrA = 3;
 	private  int linhaMatrB = 3;
 	private  int colunaMatrB = 3;
 	
-	private String opcaoSelecionada = "";
-	private Label simboloOperacao = new Label("");
-	
 	private TextField TabelaMatrizA[][] = new TextField[linhaMatrA][colunaMatrA];
 	private TextField TabelaMatrizB[][] = new TextField[linhaMatrB][colunaMatrB];
 
-	private GridPane GPRespMatrA = new GridPane();
-	private GridPane GPRespMatrB = new GridPane();
+	//Sistema
+	private int numEq = 3;
+	private int numIncog = 3;
+	private TextField TabelaMatrizAmpliada[][] = new TextField[numEq][numIncog+1];
 	
+	//Gram_Schmidt
+	private int numVetores = 3;
+	private int numCoordenadas = 3;
+	private TextField TabelaBase[][] = new TextField[numVetores][numCoordenadas];
+	
+	//Abas
 	private TabPane painelAbas = new TabPane(); // Trabalhando com abas
 	private Tab AbaMatrix ;
 	private Tab abaSystem;
@@ -104,29 +109,24 @@ public class TelaMatriz extends Application  {
 		 * coluna e o que representa a matriz B em outra coluna;
 		 * Assim é só uni-las em uma Linha (HBox)
 		 * */
-		VBox raiz = new VBox(10);
 		VBox VBoxColunaA = new VBox(10);
 		VBox VBoxColunaB = new VBox(10);
 		
-		raiz.setTranslateX(10);
-		raiz.setTranslateY(20);
-		
 		VBoxColunaB.setTranslateX(100);// TODO: O que acontece quando usa-se esse valor?
 	
-		HBox HBoxLinha = new HBox(20);
+		HBox HBoxLinha = new HBox(10);
 		HBox HBoxMatrizA = new HBox();
 		HBox HBoxMatrizB = new HBox();
 		HBox HBoxResultado = new HBox(20);
 		
 		Button BGerarMatrixA = new Button("Gerar");
 		Button BGerarMatrixB = new Button("Gerar");
-		Button BCalular = new Button("Calcular operacao");
 
 		BGerarMatrixA.setMaxSize(80, 100);
 		BGerarMatrixB.setMaxSize(80, 100);
 		
-		HBoxMatrizA.getChildren().addAll(new Label("Linha:"), TFLinhaMatrA, new Label ("  X  "),new Label("Coluna:"), TFColunaMatrA, new Label("  "), BGerarMatrixA);
-		HBoxMatrizB.getChildren().addAll(new Label("Linha:"), TFLinhaMatrB, new Label ("  X  "),new Label("Coluna:"), TFColunaMatrB, new Label("  "), BGerarMatrixB);
+		HBoxMatrizA.getChildren().addAll(new Label("Linha:  "), TFLinhaMatrA, new Label ("  X  "),new Label("Coluna:"), TFColunaMatrA, new Label("  "), BGerarMatrixA);
+		HBoxMatrizB.getChildren().addAll(new Label("Linha:  "), TFLinhaMatrB, new Label ("  X  "),new Label("Coluna:"), TFColunaMatrB, new Label("  "), BGerarMatrixB);
 		
 		
 //		VBoxColunaA.getChildren().addAll(new Label("Matriz A"),HBoxMatrizA,GPMatrizA);
@@ -134,12 +134,9 @@ public class TelaMatriz extends Application  {
 		VBoxColunaA.getChildren().addAll(new Label("\t\t\t\tMatriz A"),HBoxMatrizA,SPMatrizA);
 		VBoxColunaB.getChildren().addAll(new Label("\t\t\t\tMatriz B"),HBoxMatrizB,SPMatrizB);
 
-		//VBoxColunaA.setAlignment(Pos.CENTER);
-		//VBoxColunaB.setAlignment(Pos.CENTER);
-		
 		HBoxLinha.getChildren().addAll(VBoxColunaA,VBoxColunaB);
 		
-		//Butões para realizar ações em nas matrizes
+		//Butões para realizar ações nas matrizes
 		//Open - Organizando Button
 		Button BSomaMatrizes = new Button("Soma A e B");
 		Button BSubMatrizes = new Button("Subtração A e B");
@@ -159,8 +156,11 @@ public class TelaMatriz extends Application  {
 		HBoxOpcoesB.getChildren().addAll(BPotencia,BInversa,BMatrCofatora,BMatrAdjunta,BDeterminante);
 		//Close - Organizando Button
 
-        
-        raiz.getChildren().addAll(HBoxLinha, HBoxOpcoesA, HBoxOpcoesB, BCalular, HBoxResultado);
+		VBox raiz = new VBox(10);
+		raiz.setTranslateX(10);
+		raiz.setTranslateY(20);
+		
+        raiz.getChildren().addAll(HBoxLinha, HBoxOpcoesA, HBoxOpcoesB, HBoxResultado);
         ScrollPane SPRaiz = new ScrollPane(raiz);
         //AbaMatrix.setContent(raiz); // adicionando toda as opcoes na Aba Matriz
         AbaMatrix.setContent(SPRaiz); // adicionando toda as opcoes na Aba Matriz
@@ -213,61 +213,6 @@ public class TelaMatriz extends Application  {
 				}
 			} // Fim do handle
 		  });
-	    
-		BCalular.setOnAction(new EventHandler() {
-
-			@Override
-			public void handle(Event arg0) {
-				TextField celula;
-				
-				if(opcaoSelecionada.equals("")) {
-					//TODO: Tratar erro aqui 
-					System.err.println("Selelione uma opcao primerio");
-					return;
-				}
-				
-				if(opcaoSelecionada.equals(Ultilitarios.SOMA) || 
-					opcaoSelecionada.equals(Ultilitarios.SUBTRACAO) ||
-					opcaoSelecionada.equals(Ultilitarios.MULTIPLICACAO)) {
-					
-					// TODO: Isso é so um exemplo
-					if(linhaMatrA != linhaMatrB && colunaMatrA != colunaMatrB) {
-						System.out.println("Não pode ser realizado soma!!!");
-						return;
-					}
-					
-					//exibindoMatrizesResultados();
-
-					//TODO: Chamar o objeto que ira realizar a soma das matrizes
-					//O resultado da soma deve ser colocado em GPMatrResultado, para ser exibido;
-					for(int y = 0; y < linhaMatrB; y++){
-			            for(int x = 0; x < colunaMatrB; x++){
-
-			            	celula = new TextField();		            	
-			                
-			                celula.setPrefHeight(50);
-			                celula.setPrefWidth(50);
-			                celula.setEditable(false);
-			                celula.setText("1");
-			            
-			                GPMatrizResposta.setRowIndex(celula,y);
-			                GPMatrizResposta.setColumnIndex(celula, x);    
-			                GPMatrizResposta.getChildren().add(celula);
-			            }
-			        }//close -- Y
-					HBoxResultado.setAlignment(Pos.CENTER);
-					HBoxResultado.getChildren().clear();
-					HBoxResultado.getChildren().addAll(GPRespMatrA, simboloOperacao, GPRespMatrB, new Label("="),GPMatrizResposta);
-					
-				}//close if - Soma
-				else if(opcaoSelecionada.equals(Ultilitarios.ESCALAR)){
-					
-				}//close else if - Escalar
-				else {}
-				
-			}
-			
-		});
 		
 		BSomaMatrizes.setOnAction(new EventHandler() {
 			
@@ -334,7 +279,11 @@ public class TelaMatriz extends Application  {
 			@Override
 			public void handle(Event arg0) {
 				//Receber o valor que deve ser multiplicado e a matriz
-				double scalar = Double.parseDouble(JOptionPane.showInputDialog(null, "Digite o valor do Escalars"));
+				
+				double scalar;
+				try{scalar = Double.parseDouble(JOptionPane.showInputDialog(null, "Digite o valor do Escalar:"));}
+				catch (Exception e) {scalar = 0;}
+				
 				Matriz matrix = converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
 				
 				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
@@ -428,9 +377,11 @@ public class TelaMatriz extends Application  {
 			public void handle(Event arg0) {
 				// //Receber o valor que deve ser potenciado e a matriz
 				//TODO - COnseguir uma forma de receber esse valor
-				int expoente = Integer.parseInt(JOptionPane.showInputDialog(null, "Digite o valor do Expoente:"));
-				Matriz matrix = converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
+				int expoente;
+				try{expoente = Integer.parseInt(JOptionPane.showInputDialog(null, "Digite o valor do Escalars"));}
+				catch (Exception e) {expoente = 0;}
 				
+				Matriz matrix = converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
 				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
 				
@@ -576,7 +527,7 @@ public class TelaMatriz extends Application  {
 	}
 	
 	//Gera os resultado da operação, onde mostra a matriz e o expoente, junto com a operacao e o resultado 
-		private void buildResultadoOneMatrixOneInt(HBox HBoxResultado, Matriz matrix, int expoente, GridPane GPMatrizResposta, String simboloOperacao) {
+	private void buildResultadoOneMatrixOneInt(HBox HBoxResultado, Matriz matrix, int expoente, GridPane GPMatrizResposta, String simboloOperacao) {
 			GridPane GPMatrix = transformaMatrizEmGridPaneLabel(matrix);
 			HBoxResultado.setAlignment(Pos.CENTER);
 			HBoxResultado.getChildren().clear();
@@ -593,8 +544,8 @@ public class TelaMatriz extends Application  {
     			TabelaMatriz[y][x] = celula;
 
     			// Create a new TextField in each Iteration
-    			celula.setPrefHeight(50);
-    			celula.setPrefWidth(50);
+    			celula.setPrefHeight(30);
+    			celula.setPrefWidth(30);
     			//celula.setAlignment(Pos.CENTER);
     			celula.setEditable(true);
     			celula.setText("0");
@@ -628,73 +579,571 @@ public class TelaMatriz extends Application  {
 		return null;
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void abaSystemConfigurar() {
 		abaSystem = new Tab("Sistemas");
 		
-		int DimensoesHeight =  20; // altura
-		int DimensoesWidth = 50 ; // largura
+		int DimensoesHeight =  10; // altura
+		int DimensoesWidth = 40 ; // largura
 		
-		final TextField TFCoefSystem = new TextField("3");
+		final TextField TFIncogSystem = new TextField("3");
 		final TextField TFEquaSystem = new TextField("3");
-		TFCoefSystem.setMaxSize(DimensoesWidth, DimensoesHeight);
+		TFIncogSystem.setMaxSize(DimensoesWidth, DimensoesHeight);
 		TFEquaSystem.setMaxSize(DimensoesWidth, DimensoesHeight);
 		
 		GridPane GPSystem = new GridPane();
 		GridPane GPSystemResposta = new GridPane();
 		
 		//TODO
-		geraTabelaMatriz(GPSystem, TabelaMatrizA, linhaMatrA, colunaMatrA);
+		geraTabelaSystem(GPSystem);
 		
 		ScrollPane SPSystem = new ScrollPane(GPSystem);
-		SPSystem.setMaxHeight(300);
-		SPSystem.setMaxWidth(500);
+		SPSystem.setMaxSize(300,300);//TODO - alterar tamnaho maximo
 		
-		//TODO eliminar isso
-		VBox raiz = new VBox(10);
-		
-		raiz.setTranslateX(10);
-		raiz.setTranslateY(20);
-		
-
-	
-		//Adicionando as label, textField e o GridPane 
-		HBox HBoxDefinicoesSystem = new HBox(); //Linha e Coluna
+		HBox HBoxDefinicoesSystem = new HBox(); //Linha e Coluna recebidas do Sistema
 		HBox HBoxSystem = new HBox();
 		HBox HBoxResultado = new HBox(20);
 		VBox VBoxSystem = new VBox(10);
 		
 		VBoxSystem.setTranslateX(100);
 		
-		Button BGerarSystem = new Button("Gerar Sistema");
-		BGerarSystem.setMaxSize(80, 100);
+		Button BTGerar = new Button("Gerar Sistema");
+		BTGerar.setMaxSize(100, 100);
 		
-		HBoxDefinicoesSystem.getChildren().addAll(new Label("Equações: "), TFEquaSystem, new Label (" X "),new Label("Coeficientes: "), TFCoefSystem, new Label("  "), BGerarSystem);		
-		VBoxSystem.getChildren().addAll(new Label("\t\t\t\tMatriz A"),HBoxDefinicoesSystem,SPSystem);
-
+		HBoxDefinicoesSystem.getChildren().addAll(new Label("Equações: "), TFEquaSystem, new Label (" X "),new Label("Coeficientes: "), TFIncogSystem, new Label("  "), BTGerar);		
+		VBoxSystem.getChildren().addAll(HBoxDefinicoesSystem,SPSystem);
 		HBoxSystem.getChildren().addAll(VBoxSystem);
-		
 		
 		Button BTGauss = new Button("Gauss");
 		Button BTGauss_Jordan = new Button("Gauss-Jordan");
-		Button BTPosto = new Button("Posto da matriz ampliada e da matriz dos coeficientes");
+		Button BTPosto = new Button("Posto da Matriz");
 		Button BTApresentarSolucao = new Button("Apresentar Soluções");
 		Button BTFatoracao_LU = new Button("Fatoração LU");
 		Button BTAnalizarSolucao = new Button("Analisar Solução");
 
-		HBox HBoxBotoes = new HBox(30);
+		HBox HBoxBotoes = new HBox(10); 
 		HBoxBotoes.getChildren().addAll(BTGauss, BTGauss_Jordan, BTPosto, BTApresentarSolucao, BTFatoracao_LU, BTAnalizarSolucao);
         
+		VBox raiz = new VBox(20);
+		raiz.setTranslateX(10);
+		raiz.setTranslateY(20);
+		
         raiz.getChildren().addAll(HBoxSystem, HBoxBotoes, HBoxResultado);
         ScrollPane SPRaiz = new ScrollPane(raiz);
         abaSystem.setContent(SPRaiz); // adicionando toda as opcoes na Aba System
         abaSystem.setClosable(false);
+        
+        BTGerar.setOnAction(new EventHandler() {
+			@Override
+			public void handle(Event arg0) {
+				try {
+					if(TFEquaSystem.getText().equals("") || TFIncogSystem.getText().equals(""))
+						throw new Exception("Digite algum valor númerico!!!");
+					
+					numEq = Integer.parseInt(TFEquaSystem.getText());
+					numIncog = Integer.parseInt(TFIncogSystem.getText());
+					
+					if(numEq < 0 || numIncog < 0) 
+						throw new Exception("Digite apenas valores númericos positivos");
+					
+					TabelaMatrizAmpliada = new TextField[numEq][numIncog+1];
+					GPSystem.getChildren().clear();
+					geraTabelaSystem(GPSystem);
+					
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Preencha os campos com numeros positivos", "Erro ao gerar Sistema" , JOptionPane.ERROR_MESSAGE);
+				}
+			}
+        }); //Fim do Button Gerar Sistema
+        
+        BTGauss.setOnAction(new EventHandler() {
+        	@Override
+        	public void handle(Event arg0) {
+        		//TODO
+        		Sistema system = converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
+				
+				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
+				
+				Sistema resul = OperationSystem.getInstance().gauss(system);
+				
+				if(resul == null) return; //Erro tratato dentro do metodo gauss()
+        		
+        		geraGridPaneResultado(GPSystemResposta, resul);
+        		buildResultadoSystem(HBoxResultado, system, GPSystemResposta);
+        	}
+        }); //Fim do Button 
+        
+        BTGauss_Jordan.setOnAction(new EventHandler() {
+        	@Override
+        	public void handle(Event arg0) {
+        		//TODO
+        		Sistema system = converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
+				
+				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
+				
+				Sistema resul = OperationSystem.getInstance().gaussJordan(system);
+				
+				if(resul == null) return; //Erro tratato dentro do metodo gaussJordan()
+        		
+        		geraGridPaneResultado(GPSystemResposta, resul);
+        		buildResultadoSystem(HBoxResultado, system, GPSystemResposta);
+        		
+        	}
+        }); //Fim do Button 
+        
+		BTPosto.setOnAction(new EventHandler() {
+        	@Override
+        	public void handle(Event arg0) {
+        		//TODO
+        		Sistema system = converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
+				
+				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
+				
+				//Sistema resul = OperationSystem.getInstance().analyzePost(system);
+				OperationSystem.getInstance().analyzePost(system);
+				HBoxResultado.getChildren().clear();
+//				if(resul == null) return; //Erro tratato dentro do metodo gaussJordan()
+//        		geraGridPaneResultado(GPSystemResposta, resul);
+//        		buildResultadoSystem(HBoxResultado, system, GPSystemResposta);
+        		
+        	}
+        }); //Fim do Button 
+        
+		BTApresentarSolucao.setOnAction(new EventHandler() {
+        	@Override
+        	public void handle(Event arg0) {
+        		Sistema system = converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);				
+				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
+				String solucoes = OperationSystem.getInstance().solucions(system);
+				
+				HBoxResultado.getChildren().clear();
+				
+				if(solucoes.equals("Não existe solução!")) 
+					HBoxResultado.getChildren().add(new Label(solucoes));
+				
+				
+        		VBox VBSolucoes = new VBox();
+        		String valores[] = solucoes.split("\n");
+        		Label celula;
+        		for(String valor : valores) {
+        			celula = new Label(valor);
+        			VBSolucoes.getChildren().add(celula);
+        		}
+        		
+				HBoxResultado.getChildren().add(VBSolucoes);
+//				geraGridPaneResultado(GPSystemResposta, resul);
+//        		buildResultadoSystem(HBoxResultado, system, GPSystemResposta);
+        	}
+        }); //Fim do Button 
+        
+		BTFatoracao_LU.setOnAction(new EventHandler() {
+        	@Override
+        	public void handle(Event arg0) {
+        		// TODO Auto-generated method stub
+        		HBoxResultado.getChildren().clear();
+        	}
+        }); //Fim do Button 
+        
+		BTAnalizarSolucao.setOnAction(new EventHandler() {
+        	@Override
+        	public void handle(Event arg0) {
+        		Sistema system = converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);				
+				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
+				String analise = OperationSystem.getInstance().analyzeSolucion(system);
+				
+				HBoxResultado.getChildren().clear();
+				HBoxResultado.getChildren().add(new Label(analise));
+        	}
+        }); //Fim do Button 
+        
+	}// Fim do metodo abaSystemConfigurar()
+
+	//Resgata os valores da tabela dos TextField[][] e o converte em no tipo dado "Matriz"
+	private Sistema converteTabelaINSistema(TextField[][] TabelaAmpliada,int eq, int incog){
+		
+		try {
+			if(eq < 1 || incog < 1) {
+				JOptionPane.showMessageDialog(null, "O numero de equações e coeficientes devem ser maiores que 0!!", "Erro ao criar Sistema" , JOptionPane.ERROR_MESSAGE);
+				return null;
+			}
+			double[][] matrixCoef = new double[eq][incog];
+			double[] matrixTermos = new double[eq];
+			
+			for(int i = 0; i< eq; i++) {
+				for(int j = 0; j< incog; j++) 
+					matrixCoef[i][j] = Double.parseDouble(TabelaAmpliada[i][j].getText());
+				matrixTermos[i] = Double.parseDouble(TabelaAmpliada[i][incog].getText());
+			}
+			return new Sistema(matrixCoef, matrixTermos,eq,incog);
+			
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Digite apenas números nos campos", "Erro ao criar Sistema" , JOptionPane.ERROR_MESSAGE);
+		}
+		
+		return null;
 	}
 	
+	//Controi o GridPane do Sistema e o preenche com TextField para os coeficientes e os termos
+	private void geraTabelaSystem(GridPane GPSystem) {
+    	TextField celula;
+    	Label incognita;
+    	
+    	for(int linha = 0; linha < numEq; linha++) {
+    		int coluna = 0;
+    		for(; coluna < numIncog-1; coluna++){
+    			celula = new TextField();
+    			TabelaMatrizAmpliada[linha][coluna] = celula;
+
+    			celula.setPrefHeight(30);
+    			celula.setPrefWidth(30);
+    			celula.setEditable(true);
+    			celula.setText("0");
+
+    			GPSystem.setRowIndex(celula,linha);
+    			GPSystem.setColumnIndex(celula, 2*coluna);    
+    			GPSystem.getChildren().add(celula);
+    			
+    			incognita = new Label(" x" + coluna + "  +");
+    			GPSystem.setRowIndex(incognita,linha);
+    			GPSystem.setColumnIndex(incognita, 2*coluna+1);    
+    			GPSystem.getChildren().add(incognita);
+    		}
+    		//ultimo coeficiente
+    		celula = new TextField();
+    		TabelaMatrizAmpliada[linha][coluna] = celula;
+
+    		celula.setPrefHeight(30);
+    		celula.setPrefWidth(30);
+    		celula.setEditable(true);
+    		celula.setText("0");
+
+    		GPSystem.setRowIndex(celula,linha);
+    		GPSystem.setColumnIndex(celula, 2*coluna);    
+    		GPSystem.getChildren().add(celula);
+
+    		incognita = new Label(" x" + coluna + "  =  ");
+    		GPSystem.setRowIndex(incognita,linha);
+    		GPSystem.setColumnIndex(incognita, 2*coluna+1);    
+    		GPSystem.getChildren().add(incognita);
+    		
+    		//Termo
+    		coluna = numIncog;
+    		celula = new TextField();
+    		TabelaMatrizAmpliada[linha][coluna] = celula;
+
+    		celula.setPrefHeight(30);
+    		celula.setPrefWidth(30);
+    		celula.setEditable(true);
+    		celula.setText("0");
+
+    		GPSystem.setRowIndex(celula,linha);
+    		GPSystem.setColumnIndex(celula, 2*coluna);    
+    		GPSystem.getChildren().add(celula);
+    	}
+    		
+    }// The end do geraTabelaSystem()
+	
+	//Recebe um Sistema e retorna um GridPane formado por Label's com os valores do Sistema recebida 
+	private GridPane transformaSistemaEmGridPaneLabel(Sistema system) {
+		Label celula;
+		GridPane GPSistemaLabel = new GridPane();
+		
+		for(int linha = 0; linha < system.getNumEq(); linha++) {
+			int coluna = 0;
+			for(; coluna < system.getNumIncog()-1; coluna++){
+            	celula = new Label(" (" + system.getCoef(linha, coluna) + ")x" + coluna + " + ");
+            	GPSistemaLabel.setRowIndex(celula,linha);
+            	GPSistemaLabel.setColumnIndex(celula, coluna);    
+            	GPSistemaLabel.getChildren().add(celula);
+            }
+			//ultimo coeficiente
+			celula = new Label(" (" + system.getCoef(linha, coluna) + ")x" + coluna + " = ");
+        	GPSistemaLabel.setRowIndex(celula,linha);
+        	GPSistemaLabel.setColumnIndex(celula, coluna);    
+        	GPSistemaLabel.getChildren().add(celula);
+        	
+        	//Termo
+        	celula = new Label(" " + system.getTermo(linha));
+        	GPSistemaLabel.setRowIndex(celula,linha);
+        	GPSistemaLabel.setColumnIndex(celula, coluna+1);    
+        	GPSistemaLabel.getChildren().add(celula);
+		}
+		return GPSistemaLabel;
+		
+	}
+	
+	//atribui valores ao GPSystemResposta
+	private void geraGridPaneResultado(GridPane GPSystemResposta, Sistema system) {
+		Label celula;
+		GPSystemResposta.getChildren().clear();
+		for(int linha = 0; linha < system.getNumEq(); linha++) {
+			int coluna = 0;
+			for(; coluna < system.getNumIncog()-1; coluna++){
+            	celula = new Label(" (" + system.getCoef(linha, coluna) + ")x" + coluna + " + ");
+            	GPSystemResposta.setRowIndex(celula,linha);
+            	GPSystemResposta.setColumnIndex(celula, coluna);    
+            	GPSystemResposta.getChildren().add(celula);
+            }
+			//ultimo coeficiente
+			celula = new Label(" (" + system.getCoef(linha, coluna) + ")x" + coluna + " = ");
+			GPSystemResposta.setRowIndex(celula,linha);
+			GPSystemResposta.setColumnIndex(celula, coluna);    
+			GPSystemResposta.getChildren().add(celula);
+        	
+        	//Termo
+        	celula = new Label(" " + system.getTermo(linha));
+        	GPSystemResposta.setRowIndex(celula,linha);
+        	GPSystemResposta.setColumnIndex(celula, coluna+1);    
+        	GPSystemResposta.getChildren().add(celula);
+		}
+		
+		
+	}
+	
+	//Gera os resultado da operação, onde mostra a matriz e o expoente, junto com a operacao e o resultado 
+	private void buildResultadoSystem(HBox HBoxResultado, Sistema system, GridPane GPMatrizResposta) {
+			GridPane GPSystem = transformaSistemaEmGridPaneLabel(system);
+			HBoxResultado.setAlignment(Pos.CENTER);
+			HBoxResultado.getChildren().clear();
+			HBoxResultado.getChildren().addAll(GPSystem, new Label("="), GPMatrizResposta);
+		}
+	
+	
+	/*Gram-Schmidt*/
 	private void abaVectorConfigurar() {
 		abaVector = new Tab("Gram-Schmidt");
-		abaVector.setContent(new Rectangle(150, 50));
-		abaVector.setClosable(false);
+		
+		int DimensoesHeight =  10; // altura
+		int DimensoesWidth = 40 ; // largura
+		
+		final TextField TFCoordenadas = new TextField("3");
+		final TextField TFNumVetores = new TextField("3");
+		TFCoordenadas.setMaxSize(DimensoesWidth, DimensoesHeight);
+		TFNumVetores.setMaxSize(DimensoesWidth, DimensoesHeight);
+		
+		GridPane GPBase = new GridPane();
+		GridPane GPBaseResposta = new GridPane();
+		
+		geraTabelaBase(GPBase);
+		
+		ScrollPane SPBase = new ScrollPane(GPBase);
+		SPBase.setMaxSize(300,300);
+		
+		HBox HBoxDefinicoesBase = new HBox(); //Linha e Coluna recebidas do Sistema
+		Button BTGerar = new Button("Gerar Base");
+		BTGerar.setMaxSize(100, 100);	
+		HBoxDefinicoesBase.getChildren().addAll(new Label("Número de Vetores: "), TFNumVetores, new Label (" X "),new Label("Coordenadas: "), TFCoordenadas, new Label("  "), BTGerar);		
+		
+		VBox VBoxBase = new VBox(10);
+		VBoxBase.setTranslateX(100);
+		VBoxBase.getChildren().addAll(HBoxDefinicoesBase,SPBase);
+		
+		HBox HBoxBase = new HBox();
+		HBoxBase.getChildren().addAll(VBoxBase);
+		HBox HBoxResultado = new HBox(20);
+
+		HBox HBoxBotoes = new HBox(30); 
+		Button BTOrtogonalizar= new Button("Ortogonalizar Base");
+		Button BTOrtonormalizar = new Button("Ortonormalizar Base");
+		HBoxBotoes.getChildren().addAll(new Label(""),BTOrtogonalizar,BTOrtonormalizar);
+        
+		VBox raiz = new VBox(20);
+		raiz.setTranslateX(10);
+		raiz.setTranslateY(20);
+		
+        raiz.getChildren().addAll(HBoxBase, HBoxBotoes, HBoxResultado);
+        ScrollPane SPRaiz = new ScrollPane(raiz);
+        abaVector.setContent(SPRaiz); // adicionando toda as opcoes na Aba System
+        abaVector.setClosable(false);
+		
+        BTGerar.setOnAction(new EventHandler() {
+        	@Override
+        	public void handle(Event arg0) {
+        		try {
+					if(TFNumVetores.getText().equals("") || TFCoordenadas.getText().equals(""))
+						throw new Exception("Digite algum valor númerico!!!");
+					
+					numVetores = Integer.parseInt(TFNumVetores.getText());
+					numCoordenadas = Integer.parseInt(TFCoordenadas.getText());
+					
+					if(numVetores < 0 || numCoordenadas < 0) 
+						throw new Exception("Digite apenas valores númericos positivos");
+					
+					TabelaBase = new TextField[numVetores][numCoordenadas+1];
+					GPBase.getChildren().clear();
+					geraTabelaBase(GPBase);
+					
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Preencha os campos com numeros positivos", "Erro ao gerar Sistema" , JOptionPane.ERROR_MESSAGE);
+				}
+        	}
+		}); //Fim do Button BTGerar 
+        
+        BTOrtogonalizar.setOnAction(new EventHandler() {
+        	@Override
+        	public void handle(Event arg0) {
+        		Vetor[] base = converteTabelaINBase(TabelaBase, numEq, numCoordenadas);
+				
+				if(base == null) //Erro tratado em converteGridPaneINMatriz()
+					return;
+				
+				Vetor[] baseOrtoganalizada = Gram_Schmidt.getInstance().orthogonalization(base);
+				if(baseOrtoganalizada == null) //Erro tratato dentro do metodo orthogonalization(a, b)
+					return;
+				
+				geraGridPaneResultado(GPBaseResposta,baseOrtoganalizada);
+				buildResultadoBase(HBoxResultado, base, GPBaseResposta);
+        	}
+		}); //Fim do Button BTOrtogonalizar
+        
+        BTOrtonormalizar.setOnAction(new EventHandler() {
+        	@Override
+        	public void handle(Event arg0) {
+        		Vetor[] base = converteTabelaINBase(TabelaBase, numEq, numCoordenadas);
+				
+				if(base == null) //Erro tratado em converteGridPaneINMatriz()
+					return;
+				
+				Vetor[] baseOrtonormalizada = Gram_Schmidt.getInstance().orthonormalization(base);
+				if(baseOrtonormalizada == null) //Erro tratato dentro do metodo orthonormalization()
+					return;
+				
+				geraGridPaneResultado(GPBaseResposta,baseOrtonormalizada);
+				buildResultadoBase(HBoxResultado, base, GPBaseResposta);
+        		
+        	}
+		}); //Fim do Button BTOrtonormalizar
+	}
+	
+	//Controi o GridPane da Base e o preenche com TextField para os Vetores e suas Coordenadas
+	//Controi o GridPane e o preenche com TextField para as Martizes A e B
+	private void geraTabelaBase(GridPane GPBase) {
+		TextField celula;
+		Label simbolo;
+		
+		for(int linha = 0; linha < numVetores; linha++) {
+			int coluna = 0;
+			simbolo = new Label("(  ");
+			GPBase.setRowIndex(simbolo,linha);
+			GPBase.setColumnIndex(simbolo, coluna);    
+			GPBase.getChildren().add(simbolo);
+			
+			for(; coluna < numCoordenadas-1; coluna++){
+				celula = new TextField();
+				TabelaBase[linha][coluna] = celula;
+
+				celula.setPrefHeight(30);
+				celula.setPrefWidth(30);
+				celula.setEditable(true);
+				celula.setText("0");
+
+				GPBase.setRowIndex(celula,linha);
+				GPBase.setColumnIndex(celula, 2*coluna+1);    
+				GPBase.getChildren().add(celula);
+				
+				simbolo = new Label(" , ");
+				GPBase.setRowIndex(simbolo,linha);
+				GPBase.setColumnIndex(simbolo, 2*coluna+2);    
+				GPBase.getChildren().add(simbolo);
+			}
+			//ultima Coordenada
+			celula = new TextField();
+			TabelaBase[linha][coluna] = celula;
+
+			celula.setPrefHeight(30);
+			celula.setPrefWidth(30);
+			celula.setEditable(true);
+			celula.setText("0");
+
+			GPBase.setRowIndex(celula,linha);
+			GPBase.setColumnIndex(celula, 2*coluna+1);    
+			GPBase.getChildren().add(celula);
+			
+			simbolo = new Label("  )");
+			GPBase.setRowIndex(simbolo,linha);
+			GPBase.setColumnIndex(simbolo, 2*coluna+2);    
+			GPBase.getChildren().add(simbolo);
+		}
+	}
+	
+
+	//Resgata os valores da tabela dos TextField[][] e o converte em no tipo dado "Vector[]"
+	private Vetor[] converteTabelaINBase(TextField[][] TabelaBase,int numVet, int numCoord){
+
+		try {
+			if(numVet < 1 || numCoord < 1) {
+				JOptionPane.showMessageDialog(null, "O número de Vetores e de Coordenadas devem ser maiores que 0!!", "Erro ao criar a Base" , JOptionPane.ERROR_MESSAGE);
+				return null;
+			}
+			Vetor base[] = new Vetor[numVet];
+			double vetor[] = new double[numCoord];
+			for(int i = 0; i< numVet; i++) {
+				for(int j = 0; j< numCoord; j++) 
+					vetor[j] = Double.parseDouble(TabelaBase[i][j].getText());
+				base[i] = new Vetor(vetor);
+			}
+			return base;
+
+		}catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Digite apenas números nos campos", "Erro ao criar Sistema" , JOptionPane.ERROR_MESSAGE);
+		}
+
+		return null;
+	}
+	
+
+	//Recebe uma Vetor[] e retorna um GridPane formado por Label's com os valores do vetor
+	private GridPane transformaBaseEmGridPaneLabel(Vetor base[]) {
+		Label celula;
+		GridPane GPBase = new GridPane();
+		String vetor;
+		for(int linha = 0; linha < base.length; linha++) {
+			int coluna = 0;
+			vetor = "( ";
+			
+			for(; coluna < base[0].getNumCoordenadas() -1; coluna++)
+				vetor += "" + base[linha].getValorCoordenada(coluna) + ", ";
+			vetor += "" + base[linha].getValorCoordenada(coluna) + " )";
+			
+			celula = new Label(vetor);
+			GPBase.setRowIndex(celula,linha);
+			GPBase.setColumnIndex(celula, coluna);    
+			GPBase.getChildren().add(celula);
+		}
+		return GPBase;
+
+	}
+	
+
+	//atribui valores ao GPSystemResposta
+	private void geraGridPaneResultado(GridPane GPBaseResposta, Vetor base[]) {
+		Label celula;
+		GPBaseResposta.getChildren().clear();
+		
+		String vetor;
+		for(int linha = 0; linha < base.length; linha++) {
+			int coluna = 0;
+			vetor = "( ";
+			
+			for(; coluna < base[0].getNumCoordenadas() -1; coluna++)
+				vetor += "" + base[linha].getValorCoordenada(coluna) + ", ";
+			vetor += "" + base[linha].getValorCoordenada(coluna) + " )";
+			
+			celula = new Label(vetor);
+			GPBaseResposta.setRowIndex(celula,linha);
+			GPBaseResposta.setColumnIndex(celula, coluna);    
+			GPBaseResposta.getChildren().add(celula);
+		}
+
+	}
+	
+
+	//Gera os resultado da operação, onde mostra a matriz e o expoente, junto com a operacao e o resultado 
+	private void buildResultadoBase(HBox HBoxResultado, Vetor base[], GridPane GPMatrizResposta) {
+		GridPane GPSystem = transformaBaseEmGridPaneLabel(base);
+		HBoxResultado.setAlignment(Pos.CENTER);
+		HBoxResultado.getChildren().clear();
+		HBoxResultado.getChildren().addAll(GPSystem, new Label("="), GPMatrizResposta);
 	}
 
-
-}//close class
+}//close class	
