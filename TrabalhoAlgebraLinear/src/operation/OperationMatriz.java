@@ -204,12 +204,6 @@ public class OperationMatriz {
 			return null;
 		}
 		if(matrix.getLinha() == 1) { //o que acontece aqui?
-			//TODO - O que acontece aqui?
-			/*Opções:
-			 * matrix
-			 * {{0}}
-			 * [1]
-			 * */
 			return matrix;
 		}
 		

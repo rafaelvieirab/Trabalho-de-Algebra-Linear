@@ -661,15 +661,13 @@ public class TelaAbas extends Application  {
         	public void handle(Event arg0) {
         		//TODO
         		Sistema system = converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
-				
 				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
+				gaussAdaptadoHBoxResultado(HBoxResultado,system);
 				
-				Sistema resul = OperationSystem.getInstance().gauss(system);
-				
-				if(resul == null) return; //Erro tratato dentro do metodo gauss()
-        		
-        		geraGridPaneResultado(GPSystemResposta, resul);
-        		buildResultadoSystem(HBoxResultado, system, GPSystemResposta);
+//				Sistema resul = OperationSystem.getInstance().gauss(system);
+//				if(resul == null) return; //Erro tratato dentro do metodo gauss()
+//				//geraGridPaneResultado(GPSystemResposta, resul);
+        		//buildResultadoSystem(HBoxResultado, system, GPSystemResposta);
         	}
         }); //Fim do Button 
         
@@ -678,15 +676,8 @@ public class TelaAbas extends Application  {
         	public void handle(Event arg0) {
         		//TODO
         		Sistema system = converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
-				
 				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
-				
-				Sistema resul = OperationSystem.getInstance().gaussJordan(system);
-				
-				if(resul == null) return; //Erro tratato dentro do metodo gaussJordan()
-        		
-        		geraGridPaneResultado(GPSystemResposta, resul);
-        		buildResultadoSystem(HBoxResultado, system, GPSystemResposta);
+				gaussJordanAlterado(HBoxResultado,system);
         		
         	}
         }); //Fim do Button 
@@ -741,6 +732,23 @@ public class TelaAbas extends Application  {
         	public void handle(Event arg0) {
         		// TODO Auto-generated method stub
         		HBoxResultado.getChildren().clear();
+        		Sistema system = converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
+				
+				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
+				
+        		Matriz matrixLU[] = OperationSystem.getInstance().fatoracaoLU(system);
+        		if(matrixLU == null)
+        			return;
+        		
+        		GridPane GPMatrixU = transformaMatrizEmGridPaneLabel(matrixLU[0]);
+        		GridPane GPMatrixL = transformaMatrizEmGridPaneLabel(matrixLU[1]);
+        		//TODO - Acho que é L*U
+        		
+        		GridPane GPSystemOriginal = transformaSistemaEmGridPaneLabel(system);
+    			HBoxResultado.setAlignment(Pos.CENTER);
+    			HBoxResultado.getChildren().clear();
+    			HBoxResultado.getChildren().addAll(GPSystemOriginal, new Label("="), GPMatrixL, new Label("*"), GPMatrixU);
+        		
         	}
         }); //Fim do Button 
         
@@ -906,8 +914,152 @@ public class TelaAbas extends Application  {
 			HBoxResultado.setAlignment(Pos.CENTER);
 			HBoxResultado.getChildren().clear();
 			HBoxResultado.getChildren().addAll(GPSystem, new Label("="), GPMatrizResposta);
-		}
+	}
 	
+	//Auxiliares do System para Imprimir Gauss e Gauss-Jordan
+
+	/*Gauss*/
+	private void gaussAdaptadoHBoxResultado(HBox HBoxResultado, Sistema system) {
+		
+		GridPane GPSystem = transformaSistemaEmGridPaneLabel(system); 
+		HBoxResultado.setAlignment(Pos.CENTER);
+		HBoxResultado.getChildren().clear();
+		HBoxResultado.getChildren().addAll(GPSystem, new Label("="));
+		VBox VBMudancaLinha;
+		
+		if(system.getNumEq() <= 1 || system.getNumIncog() <= 1) { 
+			HBoxResultado.getChildren().add(GPSystem);
+			return; //return system;
+		}
+		
+		double[][] matrixAmp = system.getMatrizAmpliada();
+		boolean sistemaZerado = true; //identifica se todos os coeficientes estao zerados
+		
+		for(int i = 0; i < system.getNumEq()-1 && i < system.getNumIncog(); i++) {
+			
+			if(matrixAmp[i][i] == 0) 
+				if(!rowsSwap(HBoxResultado, matrixAmp,i)) 
+					continue;
+			sistemaZerado = false;
+			if(matrixAmp[i][i] != 1) { 
+				double divisor = matrixAmp[i][i];
+				VBMudancaLinha = new VBox(5);
+				VBMudancaLinha.getChildren().addAll(new Label("~"),new Label("\nL"+i+" <- L"+i+"/"+divisor+"\n"));
+				HBoxResultado.getChildren().add(VBMudancaLinha);
+				
+				for(int j = 0; j <= system.getNumIncog(); j++) 
+					matrixAmp[i][j] /= divisor;
+				HBoxResultado.getChildren().add(transformaSistemaEmGridPaneLabel(new Sistema(matrixAmp,system.getNumEq(),system.getNumIncog())));
+			}
+			
+			String linhaAlterada = "";
+			for(int linha = i+1; linha < system.getNumEq(); linha++) {
+				double firstTermo = matrixAmp[linha][i];
+				if(firstTermo == 0)
+					continue;
+				linhaAlterada += "L"+linha+" <- L"+linha+"- ("+firstTermo +" * L"+i+")\n";
+				
+				for(int coluna = i; coluna <= system.getNumIncog(); coluna++) 
+					matrixAmp[linha][coluna] -= (firstTermo * matrixAmp[i][coluna]);
+			}
+			
+			if(linhaAlterada.length() != 0) {
+				VBMudancaLinha = new VBox(5);
+				VBMudancaLinha.getChildren().add(new Label("        ~"));
+				
+				String lA[] = linhaAlterada.split("\n");
+				for(String l : lA)
+					VBMudancaLinha.getChildren().add(new Label(l));
+				HBoxResultado.getChildren().addAll(VBMudancaLinha,transformaSistemaEmGridPaneLabel(new Sistema(matrixAmp,system.getNumEq(),system.getNumIncog())));
+			}
+		}
+		if(sistemaZerado) 
+			HBoxResultado.getChildren().add(GPSystem);
+		//return new Sistema(matrixAmp,system.getNumEq(), system.getNumIncog());
+	}
+	
+	/*Gauss-Jordan*/
+	public void gaussJordanAlterado(HBox HBoxResultado,Sistema system) {
+		gaussAdaptadoHBoxResultado(HBoxResultado, system);
+		if(system.getNumEq() <= 1 || system.getNumIncog() <= 1) 
+			return ; //return system;
+		
+		double[][] matrixAmp = null;
+		VBox VBMudancaLinha;
+		boolean sistemaZerado = true; //identifica se todos os coeficientes estao zerados
+		
+		int i;
+		
+		if(system.getNumEq() < system.getNumIncog())
+			i = system.getNumEq()-1;
+		else
+			i = system.getNumIncog()-1;
+		for(; i >=0; i--) {
+			if(matrixAmp[i][i] == 0)  //Verifica se o Pivo Atual != 0
+				continue;
+			sistemaZerado = false;
+			if(matrixAmp[i][i] != 1) { //Verifica se o Pivo Atual != 1
+				double divisor = matrixAmp[i][i];
+				
+				VBMudancaLinha = new VBox(5);
+				VBMudancaLinha.getChildren().addAll(new Label("       ~"),new Label("\nL"+i+" <- L"+i+"/"+divisor+"\n"));
+				HBoxResultado.getChildren().add(VBMudancaLinha);
+				
+				for(int j = 0; j <= system.getNumIncog(); j++) 
+					matrixAmp[i][j] /= divisor;
+				
+				HBoxResultado.getChildren().add(transformaSistemaEmGridPaneLabel(new Sistema(matrixAmp,system.getNumEq(),system.getNumIncog())));
+			}
+			
+			String linhaAlterada = "";
+			for(int linha = i-1; linha >= 0; linha--) {
+				double firstTermo = matrixAmp[linha][i];	//pega o 1° elemento que vai ser zerado
+				if(firstTermo == 0)
+					continue;
+				linhaAlterada += "L"+linha+" <- L"+linha+"- ("+firstTermo +" * L"+i+")\n";
+				
+				for(int coluna = system.getNumIncog(); coluna >= 0; coluna--) 
+					matrixAmp[linha][coluna] -=  (firstTermo*matrixAmp[i][coluna]);	
+			}
+			if(linhaAlterada.length() != 0) {
+				VBMudancaLinha = new VBox(5);
+				VBMudancaLinha.getChildren().add(new Label("        ~"));
+				
+				String lA[] = linhaAlterada.split("\n");
+				for(String l : lA)
+					VBMudancaLinha.getChildren().add(new Label(l));
+				HBoxResultado.getChildren().addAll(VBMudancaLinha,transformaSistemaEmGridPaneLabel(new Sistema(matrixAmp,system.getNumEq(),system.getNumIncog())));
+			}
+		}
+		if(sistemaZerado) 
+			HBoxResultado.getChildren().add(transformaSistemaEmGridPaneLabel(system));
+		//return new Sistema(matrixAmp,system.getNumEq(), system.getNumIncog());
+	}
+	
+	/*Se trocar as linhas retorna true, senão false*/
+	private boolean rowsSwap(HBox HBoxResultado, double[][] matrix, int i) {
+		int j = i+1;
+		while(j < matrix.length && matrix[j][i] == 0)
+			j++;
+			
+		if(j == matrix.length) 
+			return false;
+		if(matrix[j][i] != 0) {
+			VBox VBMudancaLinha = new VBox(5);
+			VBMudancaLinha.getChildren().addAll(new Label("    ~"),new Label("L" + i + " <-> L" + j));
+			HBoxResultado.getChildren().add(VBMudancaLinha);
+			
+			double aux;
+			for(int coluna = 0; coluna < matrix[0].length; coluna++) {
+				aux = matrix[i][coluna];
+				matrix[i][coluna] = matrix[j][coluna]; 
+				matrix[j][coluna] = aux;
+			}
+
+			HBoxResultado.getChildren().add(transformaSistemaEmGridPaneLabel(new Sistema(matrix,matrix.length,matrix[0].length)));
+		}
+		return true;
+	}
 	
 	/*Gram-Schmidt*/
 	private void abaVectorConfigurar() {
@@ -1016,7 +1168,6 @@ public class TelaAbas extends Application  {
 	}
 	
 	//Controi o GridPane da Base e o preenche com TextField para os Vetores e suas Coordenadas
-	//Controi o GridPane e o preenche com TextField para as Martizes A e B
 	private void geraTabelaBase(GridPane GPBase) {
 		TextField celula;
 		Label simbolo;

@@ -1,5 +1,8 @@
 package operation;
 
+import javax.swing.JOptionPane;
+
+import model.Matriz;
 import model.Sistema;
 
 public class OperationSystem {
@@ -30,6 +33,8 @@ public class OperationSystem {
 			
 			for(int linha = i+1; linha < system.getNumEq(); linha++) {
 				double firstTermo = matrixAmp[linha][i];//1° elemento que vai ser zerado
+				if(firstTermo == 0)
+					continue;
 				System.out.println("L"+linha+" <- L"+linha+"- ("+firstTermo +" * L"+i+")");
 				
 				for(int coluna = i; coluna <= system.getNumIncog(); coluna++) 
@@ -42,7 +47,6 @@ public class OperationSystem {
 	
 	/*Gauss-Jordan*/
 	public Sistema gaussJordan(Sistema system) {
-		//TODO 
 		
 		System.out.println("\t\tEscalonamento por Gauss-Jordan: ");
 		if(system.getNumEq() <= 1 || system.getNumIncog() <= 1)
@@ -65,6 +69,8 @@ public class OperationSystem {
 			
 			for(int linha = i-1; linha >= 0; linha--) {
 				double firstTermo = matrixAmp[linha][i];	//pega o 1° elemento que vai ser zerado
+				if(firstTermo == 0)
+					continue;
 				System.out.println("L"+linha+" <- L"+linha+"- ("+firstTermo +" * L"+i+")");
 				
 				for(int coluna = system.getNumIncog(); coluna >= 0; coluna--) 
@@ -184,9 +190,8 @@ public class OperationSystem {
 		return coeficientes;
 	}
 	
-	//TODO - /erifica se é inversivel?
 	/*Fatora o sistema na matriz L e na matriz U*/
-	public void fatoracaoLU(Sistema system) {
+	public Matriz[] fatoracaoLU(Sistema system) {
 		//TODO
 		//L é uma matriz triangular inferior, oriunda da Identidade com uma diagonal Principal igual 1
 		//U "  "	"		 "	 	superior, oriunda da matriz Original
@@ -196,6 +201,11 @@ public class OperationSystem {
 			*=> A matriz identidade escalada é a matriz L (vai continuar tendo a diagonal == 1)
 			*=> A matriz original escalada é a matriz U
 		*/
+		double det = OperationMatriz.getInstance().determinante(new Matriz(system.getMatrizCoef()));
+		if(det == 0) {
+			JOptionPane.showMessageDialog(null, "A Matriz dos Coeficientes tem determinante igual a 0, logo não admite inversa e nem FatoraçãoLU!", "Erro na Fatoração LU do sistema" , JOptionPane.ERROR_MESSAGE);
+			//return null;
+		}
 		double[][] matrixLU = buildMatrixIdentityOriginalLU(system);
 		matrixLU = gauss(new Sistema(matrixLU, system.getNumEq(), 2*system.getNumIncog())).getMatrizAmpliada();
 		
@@ -216,21 +226,22 @@ public class OperationSystem {
 				matrixU[linha][coluna] = matrixLU[linha][coluna];
 				matrixL[linha][coluna] = matrixLU[linha][coluna + system.getNumIncog()]; 
 			}
-		
-		//Mostrando na tela
-		System.out.println("\nMatriz U:");
-		for(int linha = 0; linha < system.getNumEq(); linha++) {
-			System.out.println("");
-			for(int coluna = 0; coluna < system.getNumIncog(); coluna++) 
-				System.out.print(matrixU[linha][coluna]+" "); 
-		}
-		System.out.println("\n\nMatriz L:");
-		for(int linha = 0; linha < system.getNumEq(); linha++) {
-			System.out.println("");
-			for(int coluna = 0; coluna < system.getNumIncog(); coluna++) 
-				System.out.print(matrixL[linha][coluna]+" "); 
-		}
-		System.out.println();
+		Matriz lu[] = {new Matriz(matrixU),new Matriz(matrixU)};
+		return lu;
+//		//Mostrando na tela
+//		System.out.println("\nMatriz U:");
+//		for(int linha = 0; linha < system.getNumEq(); linha++) {
+//			System.out.println("");
+//			for(int coluna = 0; coluna < system.getNumIncog(); coluna++) 
+//				System.out.print(matrixU[linha][coluna]+" "); 
+//		}
+//		System.out.println("\n\nMatriz L:");
+//		for(int linha = 0; linha < system.getNumEq(); linha++) {
+//			System.out.println("");
+//			for(int coluna = 0; coluna < system.getNumIncog(); coluna++) 
+//				System.out.print(matrixL[linha][coluna]+" "); 
+//		}
+//		System.out.println();
 		
 	} //fim da fatoracaoLU
 
