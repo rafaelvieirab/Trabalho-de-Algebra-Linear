@@ -2,6 +2,9 @@ package view;
 
 import javax.swing.JOptionPane;
 
+import control.ControllerBase;
+import control.ControllerMatrix;
+import control.ControllerSystem;
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -93,8 +96,8 @@ public class TelaAbas extends Application  {
 		GridPane GPMatrizB = new GridPane(); 
 		GridPane GPMatrizResposta = new GridPane();
 		
-		geraTabelaMatriz(GPMatrizA, TabelaMatrizA, linhaMatrA, colunaMatrA);
-		geraTabelaMatriz(GPMatrizB, TabelaMatrizB, linhaMatrB, colunaMatrB);
+		ControllerMatrix.getInstance().geraTabelaMatriz(GPMatrizA, TabelaMatrizA, linhaMatrA, colunaMatrA);
+		ControllerMatrix.getInstance().geraTabelaMatriz(GPMatrizB, TabelaMatrizB, linhaMatrB, colunaMatrB);
 		
 		ScrollPane SPMatrizA = new ScrollPane(GPMatrizA);
 		SPMatrizA.setMaxHeight(200);
@@ -183,7 +186,7 @@ public class TelaAbas extends Application  {
 					TabelaMatrizA = new TextField[linhaMatrA][colunaMatrA];
 					GPMatrizA.getChildren().clear();//remove todas as label's anteriores
 					
-					geraTabelaMatriz(GPMatrizA, TabelaMatrizA, linhaMatrA, colunaMatrA); //gera a tabela com os TextField's
+					ControllerMatrix.getInstance().geraTabelaMatriz(GPMatrizA, TabelaMatrizA, linhaMatrA, colunaMatrA);
 					
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, e.getMessage(), "Erro ao gerar matriz A" , JOptionPane.ERROR_MESSAGE);
@@ -206,8 +209,8 @@ public class TelaAbas extends Application  {
 					
 					TabelaMatrizB = new TextField[linhaMatrB][colunaMatrB];
 					GPMatrizB.getChildren().clear();//remove todas as label's anteriores
+					ControllerMatrix.getInstance().geraTabelaMatriz(GPMatrizB, TabelaMatrizB, linhaMatrB, colunaMatrB);
 					
-					geraTabelaMatriz(GPMatrizB, TabelaMatrizB,linhaMatrB,colunaMatrB);
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, e.getMessage(), "Erro ao gerar matriz B" , JOptionPane.ERROR_MESSAGE);
 				}
@@ -217,8 +220,9 @@ public class TelaAbas extends Application  {
 		BSomaMatrizes.setOnAction(new EventHandler() {
 			
 			public void handle(Event arg0) {
-				Matriz a = converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
-				Matriz b = converteTabelaINMatriz(TabelaMatrizB, linhaMatrB, colunaMatrB);
+				
+				Matriz a = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
+				Matriz b = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizB, linhaMatrB, colunaMatrB);
 				
 				if(a == null || b == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
@@ -227,8 +231,9 @@ public class TelaAbas extends Application  {
 				if(resul == null) //Erro tratato dentro do metodo additionMatriz(a, b)
 					return;
 				
-				geraGridPaneResultado(GPMatrizResposta,resul);
-				buildResultadoTwoMatrix(HBoxResultado, a, b, GPMatrizResposta, " + ");
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
+				
+				ControllerMatrix.getInstance().buildResultadoTwoMatrix(HBoxResultado, a, b, GPMatrizResposta, " + ");
 //				opcaoSelecionada = Ultilitarios.SOMA;
 //				simboloOperacao.setText("+");
 			}
@@ -238,8 +243,8 @@ public class TelaAbas extends Application  {
 
 			@Override
 			public void handle(Event arg0) {
-				Matriz a = converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
-				Matriz b = converteTabelaINMatriz(TabelaMatrizB, linhaMatrB, colunaMatrB);
+				Matriz a = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
+				Matriz b = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizB, linhaMatrB, colunaMatrB);
 				
 				if(a == null || b == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
@@ -248,8 +253,8 @@ public class TelaAbas extends Application  {
 				if(resul == null) //Erro tratato dentro do metodo subMatriz(a, b)
 					return;
 				
-				geraGridPaneResultado(GPMatrizResposta,resul);
-				buildResultadoTwoMatrix(HBoxResultado, a, b, GPMatrizResposta, "-");
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
+				ControllerMatrix.getInstance().buildResultadoTwoMatrix(HBoxResultado, a, b, GPMatrizResposta, "-");
 				
 			}
 		});
@@ -258,8 +263,8 @@ public class TelaAbas extends Application  {
 
 			@Override
 			public void handle(Event arg0) {
-				Matriz a = converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
-				Matriz b = converteTabelaINMatriz(TabelaMatrizB, linhaMatrB, colunaMatrB);
+				Matriz a = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
+				Matriz b = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizB, linhaMatrB, colunaMatrB);
 				
 				if(a == null || b == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
@@ -268,8 +273,8 @@ public class TelaAbas extends Application  {
 				if(resul == null) //Erro tratato dentro do metodo matrixMultiplication(a, b)
 					return;
 				
-				geraGridPaneResultado(GPMatrizResposta,resul);
-				buildResultadoTwoMatrix(HBoxResultado, a, b, GPMatrizResposta, "x");
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
+				ControllerMatrix.getInstance().buildResultadoTwoMatrix(HBoxResultado, a, b, GPMatrizResposta, "x");
 				
 			}
 		});
@@ -284,7 +289,7 @@ public class TelaAbas extends Application  {
 				try{scalar = Double.parseDouble(JOptionPane.showInputDialog(null, "Digite o valor do Escalar:"));}
 				catch (Exception e) {scalar = 0;}
 				
-				Matriz matrix = converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
+				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
 				
 				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
@@ -293,10 +298,8 @@ public class TelaAbas extends Application  {
 				if(resul == null) //Erro tratato dentro do metodo scalarMultiplication()
 					return;
 				
-				geraGridPaneResultado(GPMatrizResposta,resul);
-				buildResultadoOneMatrixOneDouble(HBoxResultado, matrix,  scalar, GPMatrizResposta, "*");
-//				opcaoSelecionada = Ultilitarios.ESCALAR;
-//				simboloOperacao.setText("x");
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
+				ControllerMatrix.getInstance().buildResultadoOneMatrixWithScalar(HBoxResultado, matrix, scalar, GPMatrizResposta);
 				
 			}	
 		});//fim do EventHandler
@@ -304,7 +307,7 @@ public class TelaAbas extends Application  {
 		BTranposicao.setOnAction(new EventHandler() {
 			@Override
 			public void handle(Event arg0) {
-				Matriz matrix = converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
+				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
 				
 				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
@@ -313,7 +316,7 @@ public class TelaAbas extends Application  {
 				if(resul == null) //Erro tratato dentro do metodo transposition(a, b)
 					return;
 				
-				geraGridPaneResultado(GPMatrizResposta,resul);
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
 				
 				Label celula;
 				GridPane GPMatrix = new GridPane();
@@ -339,7 +342,7 @@ public class TelaAbas extends Application  {
 		BDeterminante.setOnAction(new EventHandler() {
 			@Override
 			public void handle(Event arg0) {
-				Matriz matrix = converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
+				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
 				
 				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
@@ -381,7 +384,7 @@ public class TelaAbas extends Application  {
 				try{expoente = Integer.parseInt(JOptionPane.showInputDialog(null, "Digite o valor do Escalars"));}
 				catch (Exception e) {expoente = 0;}
 				
-				Matriz matrix = converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
+				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
 				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
 				
@@ -389,8 +392,8 @@ public class TelaAbas extends Application  {
 				if(resul == null) //Erro tratato dentro do metodo potency()
 					return;
 				
-				geraGridPaneResultado(GPMatrizResposta,resul);
-				buildResultadoOneMatrixOneInt(HBoxResultado, matrix, expoente, GPMatrizResposta, "^");
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
+				ControllerMatrix.getInstance().buildResultadoOneMatrixPotency(HBoxResultado, matrix, expoente, GPMatrizResposta);
 				
 			}
 		});//fim do EventHandler
@@ -398,7 +401,7 @@ public class TelaAbas extends Application  {
 		BMatrAdjunta.setOnAction(new EventHandler() {
 			@Override
 			public void handle(Event arg0) {
-				Matriz matrix = converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
+				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
 				
 				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
@@ -407,8 +410,9 @@ public class TelaAbas extends Application  {
 				if(resul == null) //Erro tratato dentro do metodo adjunta()
 					return;
 				
-				geraGridPaneResultado(GPMatrizResposta,resul);
-				GridPane GPAdjunta = transformaMatrizEmGridPaneLabel(matrix);
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
+				
+				GridPane GPAdjunta = ControllerMatrix.getInstance().transformaMatrizEmGridPaneLabel(matrix);
 				
 				HBoxResultado.setAlignment(Pos.CENTER);
 				HBoxResultado.getChildren().clear();
@@ -420,7 +424,7 @@ public class TelaAbas extends Application  {
 		BMatrCofatora.setOnAction(new EventHandler() {
 			@Override
 			public void handle(Event arg0) {
-				Matriz matrix = converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
+				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
 				
 				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
@@ -429,8 +433,8 @@ public class TelaAbas extends Application  {
 				if(resul == null) //Erro tratato dentro do metodo adjunta()
 					return;
 				
-				geraGridPaneResultado(GPMatrizResposta,resul);
-				GridPane GPCofatora = transformaMatrizEmGridPaneLabel(matrix);
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
+				GridPane GPCofatora = ControllerMatrix.getInstance().transformaMatrizEmGridPaneLabel(matrix);
 				
 				HBoxResultado.setAlignment(Pos.CENTER);
 				HBoxResultado.getChildren().clear();
@@ -442,7 +446,7 @@ public class TelaAbas extends Application  {
 		BInversa.setOnAction(new EventHandler() {
 			@Override
 			public void handle(Event arg0) {
-				Matriz matrix = converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
+				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
 				
 				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
@@ -451,7 +455,7 @@ public class TelaAbas extends Application  {
 				if(resul == null) //Erro tratato dentro do metodo inverse(a, b)
 					return;
 				
-				geraGridPaneResultado(GPMatrizResposta,resul);
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
 				
 				Label celula;
 				GridPane GPMatrix = new GridPane();
@@ -479,106 +483,6 @@ public class TelaAbas extends Application  {
 	
 	//Matrizes
 	
-	//Recebe uma matriz e retorna um GridPane formado por Label's com os valores da Matriz recebida 
-	private GridPane transformaMatrizEmGridPaneLabel(Matriz matrix) {
-		Label celula;
-		GridPane GPMatrizLabel = new GridPane();
-		
-		for(int linha = 0; linha < matrix.getLinha(); linha++) 
-            for(int coluna = 0; coluna < matrix.getColuna(); coluna++){
-            	celula = new Label(" " + matrix.value(linha, coluna));
-            	GPMatrizLabel.setRowIndex(celula,linha);
-            	GPMatrizLabel.setColumnIndex(celula, coluna);    
-            	GPMatrizLabel.getChildren().add(celula);
-            }
-		return GPMatrizLabel;
-	}
-	
-	//atribui valores ao GPMatrizResposta
-	private void geraGridPaneResultado(GridPane GPMatrizResposta, Matriz matrix) {
-		Label celula;
-		GPMatrizResposta.getChildren().clear();
-		for(int linha = 0; linha < matrix.getLinha(); linha++)
-            for(int coluna = 0; coluna < matrix.getColuna(); coluna++){
-            	celula = new Label(" " + matrix.value(linha, coluna));
-            	GPMatrizResposta.setRowIndex(celula,linha);
-            	GPMatrizResposta.setColumnIndex(celula, coluna);    
-            	GPMatrizResposta.getChildren().add(celula);
-            }
-	}
-	
-	//Gera os resultado da operação, onde mostra as matrizes e a operacao com o resultado
-	private void buildResultadoTwoMatrix(HBox HBoxResultado, Matriz matrixA, Matriz matrixB, GridPane GPMatrizResposta, String simboloOperacao) {
-		GridPane GPAuxA = transformaMatrizEmGridPaneLabel(matrixA);
-		GridPane GPAuxB = transformaMatrizEmGridPaneLabel(matrixB);
-		
-		HBoxResultado.setAlignment(Pos.CENTER);
-		HBoxResultado.getChildren().clear();
-		HBoxResultado.getChildren().addAll(GPAuxA, new Label(simboloOperacao), GPAuxB, new Label("="),GPMatrizResposta);
-		
-	}
-	
-	//Gera os resultado da operação, onde mostra a matriz e o numero da passado junto com a operacao e o resultado 
-	private void buildResultadoOneMatrixOneDouble(HBox HBoxResultado, Matriz matrix, Double scalar, GridPane GPMatrizResposta, String simboloOperacao) {
-		GridPane GPMatrix = transformaMatrizEmGridPaneLabel(matrix);
-		HBoxResultado.setAlignment(Pos.CENTER);
-		HBoxResultado.getChildren().clear();
-		HBoxResultado.getChildren().addAll(GPMatrix, new Label(simboloOperacao), new Label(""+scalar), new Label("="),GPMatrizResposta);
-	}
-	
-	//Gera os resultado da operação, onde mostra a matriz e o expoente, junto com a operacao e o resultado 
-	private void buildResultadoOneMatrixOneInt(HBox HBoxResultado, Matriz matrix, int expoente, GridPane GPMatrizResposta, String simboloOperacao) {
-			GridPane GPMatrix = transformaMatrizEmGridPaneLabel(matrix);
-			HBoxResultado.setAlignment(Pos.CENTER);
-			HBoxResultado.getChildren().clear();
-			HBoxResultado.getChildren().addAll(GPMatrix, new Label(simboloOperacao), new Label("" + expoente), new Label("="),GPMatrizResposta);
-		}
-	
-	//Controi o GridPane e o preenche com TextField para as Martizes A e B
-	private void geraTabelaMatriz(GridPane GPMatriz, TextField[][] TabelaMatriz,int linha, int coluna) {
-    	TextField celula;
-    	for(int y = 0; y < linha; y++)
-    		for(int x = 0; x < coluna; x++){
-
-    			celula = new TextField();
-    			TabelaMatriz[y][x] = celula;
-
-    			// Create a new TextField in each Iteration
-    			celula.setPrefHeight(30);
-    			celula.setPrefWidth(30);
-    			//celula.setAlignment(Pos.CENTER);
-    			celula.setEditable(true);
-    			celula.setText("0");
-
-    			// Iterate the Index using the loops
-    			GPMatriz.setRowIndex(celula,y);
-    			GPMatriz.setColumnIndex(celula, x);    
-    			GPMatriz.getChildren().add(celula);
-    		}
-    	
-    }
-	
-	//Resgata os valores da tabela dos TextField[][] e o converte em no tipo dado "Matriz"
-	private Matriz converteTabelaINMatriz(TextField[][] TabelaMatriz,int linha, int coluna){
-		
-		try {
-			if(linha < 1 || coluna < 1) {
-				JOptionPane.showMessageDialog(null, "O numero de linhas e colunas devem ser maiores que 0!!", "Erro ao criar Matriz" , JOptionPane.ERROR_MESSAGE);
-				return null;
-			}
-			double[][] matrix = new double[linha][coluna];
-			for(int i = 0; i< linha; i++)
-				for(int j = 0; j< linha; j++) 
-					matrix[i][j] = Double.parseDouble(TabelaMatriz[i][j].getText());	
-			return new Matriz(matrix);
-			
-		}catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Digite apenas numeros nos campos", "Erro ao criar Matriz" , JOptionPane.ERROR_MESSAGE);
-		}
-		
-		return null;
-	}
-	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void abaSystemConfigurar() {
 		abaSystem = new Tab("Sistemas");
@@ -594,8 +498,8 @@ public class TelaAbas extends Application  {
 		GridPane GPSystem = new GridPane();
 		GridPane GPSystemResposta = new GridPane();
 		
-		//TODO
-		geraTabelaSystem(GPSystem);
+		ControllerSystem.getInstance().geraTabelaSystem(GPSystem, TabelaMatrizAmpliada, numEq, numIncog);
+		//TODO - geraTabelaSystem(GPSystem);
 		
 		ScrollPane SPSystem = new ScrollPane(GPSystem);
 		SPSystem.setMaxSize(300,300);//TODO - alterar tamnaho maximo
@@ -648,7 +552,7 @@ public class TelaAbas extends Application  {
 					
 					TabelaMatrizAmpliada = new TextField[numEq][numIncog+1];
 					GPSystem.getChildren().clear();
-					geraTabelaSystem(GPSystem);
+					ControllerSystem.getInstance().geraTabelaSystem(GPSystem, TabelaMatrizAmpliada, numEq, numIncog);
 					
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Preencha os campos com numeros positivos", "Erro ao gerar Sistema" , JOptionPane.ERROR_MESSAGE);
@@ -660,10 +564,11 @@ public class TelaAbas extends Application  {
         	@Override
         	public void handle(Event arg0) {
         		//TODO
-        		Sistema system = converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
+        		
+        		Sistema system = ControllerSystem.getInstance().converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
 				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
-				gaussAdaptadoHBoxResultado(HBoxResultado,system);
 				
+				ControllerSystem.getInstance().gaussAdaptadoHBoxResultado(HBoxResultado, system);
 //				Sistema resul = OperationSystem.getInstance().gauss(system);
 //				if(resul == null) return; //Erro tratato dentro do metodo gauss()
 //				//geraGridPaneResultado(GPSystemResposta, resul);
@@ -675,9 +580,10 @@ public class TelaAbas extends Application  {
         	@Override
         	public void handle(Event arg0) {
         		//TODO
-        		Sistema system = converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
+        		Sistema system = ControllerSystem.getInstance().converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
+        		
 				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
-				gaussJordanAlterado(HBoxResultado,system);
+				ControllerSystem.getInstance().gaussJordanAlterado(HBoxResultado, system);
         		
         	}
         }); //Fim do Button 
@@ -686,8 +592,8 @@ public class TelaAbas extends Application  {
         	@Override
         	public void handle(Event arg0) {
         		//TODO
-        		Sistema system = converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
-				
+        		Sistema system = ControllerSystem.getInstance().converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
+        		
 				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
 				
 				//Sistema resul = OperationSystem.getInstance().analyzePost(system);
@@ -703,10 +609,10 @@ public class TelaAbas extends Application  {
 		BTApresentarSolucao.setOnAction(new EventHandler() {
         	@Override
         	public void handle(Event arg0) {
-        		Sistema system = converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);				
-				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
-				String solucoes = OperationSystem.getInstance().solucions(system);
+        		Sistema system = ControllerSystem.getInstance().converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
+        		if(system == null) return; //Erro tratado em converteGridPaneINSistema()
 				
+        		String solucoes = OperationSystem.getInstance().solucions(system);
 				HBoxResultado.getChildren().clear();
 				
 				if(solucoes.equals("Não existe solução!")) 
@@ -732,19 +638,19 @@ public class TelaAbas extends Application  {
         	public void handle(Event arg0) {
         		// TODO Auto-generated method stub
         		HBoxResultado.getChildren().clear();
-        		Sistema system = converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
-				
+        		Sistema system = ControllerSystem.getInstance().converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
+        		
 				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
 				
         		Matriz matrixLU[] = OperationSystem.getInstance().fatoracaoLU(system);
         		if(matrixLU == null)
         			return;
         		
-        		GridPane GPMatrixU = transformaMatrizEmGridPaneLabel(matrixLU[0]);
-        		GridPane GPMatrixL = transformaMatrizEmGridPaneLabel(matrixLU[1]);
+        		GridPane GPMatrixU = ControllerMatrix.getInstance().transformaMatrizEmGridPaneLabel(matrixLU[0]);
+        		GridPane GPMatrixL = ControllerMatrix.getInstance().transformaMatrizEmGridPaneLabel(matrixLU[1]);
         		//TODO - Acho que é L*U
         		
-        		GridPane GPSystemOriginal = transformaSistemaEmGridPaneLabel(system);
+        		GridPane GPSystemOriginal = ControllerSystem.getInstance().transformaSistemaEmGridPaneLabel(system);
     			HBoxResultado.setAlignment(Pos.CENTER);
     			HBoxResultado.getChildren().clear();
     			HBoxResultado.getChildren().addAll(GPSystemOriginal, new Label("="), GPMatrixL, new Label("*"), GPMatrixU);
@@ -755,9 +661,10 @@ public class TelaAbas extends Application  {
 		BTAnalizarSolucao.setOnAction(new EventHandler() {
         	@Override
         	public void handle(Event arg0) {
-        		Sistema system = converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);				
-				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
-				String analise = OperationSystem.getInstance().analyzeSolucion(system);
+        		Sistema system = ControllerSystem.getInstance().converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
+        		if(system == null) return; //Erro tratado em converteGridPaneINSistema()
+				
+        		String analise = OperationSystem.getInstance().analyzeSolucion(system);
 				
 				HBoxResultado.getChildren().clear();
 				HBoxResultado.getChildren().add(new Label(analise));
@@ -766,301 +673,6 @@ public class TelaAbas extends Application  {
         
 	}// Fim do metodo abaSystemConfigurar()
 
-	//Resgata os valores da tabela dos TextField[][] e o converte em no tipo dado "Matriz"
-	private Sistema converteTabelaINSistema(TextField[][] TabelaAmpliada,int eq, int incog){
-		
-		try {
-			if(eq < 1 || incog < 1) {
-				JOptionPane.showMessageDialog(null, "O numero de equações e coeficientes devem ser maiores que 0!!", "Erro ao criar Sistema" , JOptionPane.ERROR_MESSAGE);
-				return null;
-			}
-			double[][] matrixCoef = new double[eq][incog];
-			double[] matrixTermos = new double[eq];
-			
-			for(int i = 0; i< eq; i++) {
-				for(int j = 0; j< incog; j++) 
-					matrixCoef[i][j] = Double.parseDouble(TabelaAmpliada[i][j].getText());
-				matrixTermos[i] = Double.parseDouble(TabelaAmpliada[i][incog].getText());
-			}
-			return new Sistema(matrixCoef, matrixTermos,eq,incog);
-			
-		}catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Digite apenas números nos campos", "Erro ao criar Sistema" , JOptionPane.ERROR_MESSAGE);
-		}
-		
-		return null;
-	}
-	
-	//Controi o GridPane do Sistema e o preenche com TextField para os coeficientes e os termos
-	private void geraTabelaSystem(GridPane GPSystem) {
-    	TextField celula;
-    	Label incognita;
-    	
-    	for(int linha = 0; linha < numEq; linha++) {
-    		int coluna = 0;
-    		for(; coluna < numIncog-1; coluna++){
-    			celula = new TextField();
-    			TabelaMatrizAmpliada[linha][coluna] = celula;
-
-    			celula.setPrefHeight(30);
-    			celula.setPrefWidth(30);
-    			celula.setEditable(true);
-    			celula.setText("0");
-
-    			GPSystem.setRowIndex(celula,linha);
-    			GPSystem.setColumnIndex(celula, 2*coluna);    
-    			GPSystem.getChildren().add(celula);
-    			
-    			incognita = new Label(" x" + coluna + "  +");
-    			GPSystem.setRowIndex(incognita,linha);
-    			GPSystem.setColumnIndex(incognita, 2*coluna+1);    
-    			GPSystem.getChildren().add(incognita);
-    		}
-    		//ultimo coeficiente
-    		celula = new TextField();
-    		TabelaMatrizAmpliada[linha][coluna] = celula;
-
-    		celula.setPrefHeight(30);
-    		celula.setPrefWidth(30);
-    		celula.setEditable(true);
-    		celula.setText("0");
-
-    		GPSystem.setRowIndex(celula,linha);
-    		GPSystem.setColumnIndex(celula, 2*coluna);    
-    		GPSystem.getChildren().add(celula);
-
-    		incognita = new Label(" x" + coluna + "  =  ");
-    		GPSystem.setRowIndex(incognita,linha);
-    		GPSystem.setColumnIndex(incognita, 2*coluna+1);    
-    		GPSystem.getChildren().add(incognita);
-    		
-    		//Termo
-    		coluna = numIncog;
-    		celula = new TextField();
-    		TabelaMatrizAmpliada[linha][coluna] = celula;
-
-    		celula.setPrefHeight(30);
-    		celula.setPrefWidth(30);
-    		celula.setEditable(true);
-    		celula.setText("0");
-
-    		GPSystem.setRowIndex(celula,linha);
-    		GPSystem.setColumnIndex(celula, 2*coluna);    
-    		GPSystem.getChildren().add(celula);
-    	}
-    		
-    }// The end do geraTabelaSystem()
-	
-	//Recebe um Sistema e retorna um GridPane formado por Label's com os valores do Sistema recebida 
-	private GridPane transformaSistemaEmGridPaneLabel(Sistema system) {
-		Label celula;
-		GridPane GPSistemaLabel = new GridPane();
-		
-		for(int linha = 0; linha < system.getNumEq(); linha++) {
-			int coluna = 0;
-			for(; coluna < system.getNumIncog()-1; coluna++){
-            	celula = new Label(" (" + system.getCoef(linha, coluna) + ")x" + coluna + " + ");
-            	GPSistemaLabel.setRowIndex(celula,linha);
-            	GPSistemaLabel.setColumnIndex(celula, coluna);    
-            	GPSistemaLabel.getChildren().add(celula);
-            }
-			//ultimo coeficiente
-			celula = new Label(" (" + system.getCoef(linha, coluna) + ")x" + coluna + " = ");
-        	GPSistemaLabel.setRowIndex(celula,linha);
-        	GPSistemaLabel.setColumnIndex(celula, coluna);    
-        	GPSistemaLabel.getChildren().add(celula);
-        	
-        	//Termo
-        	celula = new Label(" " + system.getTermo(linha));
-        	GPSistemaLabel.setRowIndex(celula,linha);
-        	GPSistemaLabel.setColumnIndex(celula, coluna+1);    
-        	GPSistemaLabel.getChildren().add(celula);
-		}
-		return GPSistemaLabel;
-		
-	}
-	
-	//atribui valores ao GPSystemResposta
-	private void geraGridPaneResultado(GridPane GPSystemResposta, Sistema system) {
-		Label celula;
-		GPSystemResposta.getChildren().clear();
-		for(int linha = 0; linha < system.getNumEq(); linha++) {
-			int coluna = 0;
-			for(; coluna < system.getNumIncog()-1; coluna++){
-            	celula = new Label(" (" + system.getCoef(linha, coluna) + ")x" + coluna + " + ");
-            	GPSystemResposta.setRowIndex(celula,linha);
-            	GPSystemResposta.setColumnIndex(celula, coluna);    
-            	GPSystemResposta.getChildren().add(celula);
-            }
-			//ultimo coeficiente
-			celula = new Label(" (" + system.getCoef(linha, coluna) + ")x" + coluna + " = ");
-			GPSystemResposta.setRowIndex(celula,linha);
-			GPSystemResposta.setColumnIndex(celula, coluna);    
-			GPSystemResposta.getChildren().add(celula);
-        	
-        	//Termo
-        	celula = new Label(" " + system.getTermo(linha));
-        	GPSystemResposta.setRowIndex(celula,linha);
-        	GPSystemResposta.setColumnIndex(celula, coluna+1);    
-        	GPSystemResposta.getChildren().add(celula);
-		}
-		
-		
-	}
-	
-	//Gera os resultado da operação, onde mostra a matriz e o expoente, junto com a operacao e o resultado 
-	private void buildResultadoSystem(HBox HBoxResultado, Sistema system, GridPane GPMatrizResposta) {
-			GridPane GPSystem = transformaSistemaEmGridPaneLabel(system);
-			HBoxResultado.setAlignment(Pos.CENTER);
-			HBoxResultado.getChildren().clear();
-			HBoxResultado.getChildren().addAll(GPSystem, new Label("="), GPMatrizResposta);
-	}
-	
-	//Auxiliares do System para Imprimir Gauss e Gauss-Jordan
-
-	/*Gauss*/
-	private void gaussAdaptadoHBoxResultado(HBox HBoxResultado, Sistema system) {
-		
-		GridPane GPSystem = transformaSistemaEmGridPaneLabel(system); 
-		HBoxResultado.setAlignment(Pos.CENTER);
-		HBoxResultado.getChildren().clear();
-		HBoxResultado.getChildren().addAll(GPSystem, new Label("="));
-		VBox VBMudancaLinha;
-		
-		if(system.getNumEq() <= 1 || system.getNumIncog() <= 1) { 
-			HBoxResultado.getChildren().add(GPSystem);
-			return; //return system;
-		}
-		
-		double[][] matrixAmp = system.getMatrizAmpliada();
-		boolean sistemaZerado = true; //identifica se todos os coeficientes estao zerados
-		
-		for(int i = 0; i < system.getNumEq()-1 && i < system.getNumIncog(); i++) {
-			
-			if(matrixAmp[i][i] == 0) 
-				if(!rowsSwap(HBoxResultado, matrixAmp,i)) 
-					continue;
-			sistemaZerado = false;
-			if(matrixAmp[i][i] != 1) { 
-				double divisor = matrixAmp[i][i];
-				VBMudancaLinha = new VBox(5);
-				VBMudancaLinha.getChildren().addAll(new Label("~"),new Label("\nL"+i+" <- L"+i+"/"+divisor+"\n"));
-				HBoxResultado.getChildren().add(VBMudancaLinha);
-				
-				for(int j = 0; j <= system.getNumIncog(); j++) 
-					matrixAmp[i][j] /= divisor;
-				HBoxResultado.getChildren().add(transformaSistemaEmGridPaneLabel(new Sistema(matrixAmp,system.getNumEq(),system.getNumIncog())));
-			}
-			
-			String linhaAlterada = "";
-			for(int linha = i+1; linha < system.getNumEq(); linha++) {
-				double firstTermo = matrixAmp[linha][i];
-				if(firstTermo == 0)
-					continue;
-				linhaAlterada += "L"+linha+" <- L"+linha+"- ("+firstTermo +" * L"+i+")\n";
-				
-				for(int coluna = i; coluna <= system.getNumIncog(); coluna++) 
-					matrixAmp[linha][coluna] -= (firstTermo * matrixAmp[i][coluna]);
-			}
-			
-			if(linhaAlterada.length() != 0) {
-				VBMudancaLinha = new VBox(5);
-				VBMudancaLinha.getChildren().add(new Label("        ~"));
-				
-				String lA[] = linhaAlterada.split("\n");
-				for(String l : lA)
-					VBMudancaLinha.getChildren().add(new Label(l));
-				HBoxResultado.getChildren().addAll(VBMudancaLinha,transformaSistemaEmGridPaneLabel(new Sistema(matrixAmp,system.getNumEq(),system.getNumIncog())));
-			}
-		}
-		if(sistemaZerado) 
-			HBoxResultado.getChildren().add(GPSystem);
-		//return new Sistema(matrixAmp,system.getNumEq(), system.getNumIncog());
-	}
-	
-	/*Gauss-Jordan*/
-	public void gaussJordanAlterado(HBox HBoxResultado,Sistema system) {
-		gaussAdaptadoHBoxResultado(HBoxResultado, system);
-		if(system.getNumEq() <= 1 || system.getNumIncog() <= 1) 
-			return ; //return system;
-		
-		double[][] matrixAmp = null;
-		VBox VBMudancaLinha;
-		boolean sistemaZerado = true; //identifica se todos os coeficientes estao zerados
-		
-		int i;
-		
-		if(system.getNumEq() < system.getNumIncog())
-			i = system.getNumEq()-1;
-		else
-			i = system.getNumIncog()-1;
-		for(; i >=0; i--) {
-			if(matrixAmp[i][i] == 0)  //Verifica se o Pivo Atual != 0
-				continue;
-			sistemaZerado = false;
-			if(matrixAmp[i][i] != 1) { //Verifica se o Pivo Atual != 1
-				double divisor = matrixAmp[i][i];
-				
-				VBMudancaLinha = new VBox(5);
-				VBMudancaLinha.getChildren().addAll(new Label("       ~"),new Label("\nL"+i+" <- L"+i+"/"+divisor+"\n"));
-				HBoxResultado.getChildren().add(VBMudancaLinha);
-				
-				for(int j = 0; j <= system.getNumIncog(); j++) 
-					matrixAmp[i][j] /= divisor;
-				
-				HBoxResultado.getChildren().add(transformaSistemaEmGridPaneLabel(new Sistema(matrixAmp,system.getNumEq(),system.getNumIncog())));
-			}
-			
-			String linhaAlterada = "";
-			for(int linha = i-1; linha >= 0; linha--) {
-				double firstTermo = matrixAmp[linha][i];	//pega o 1° elemento que vai ser zerado
-				if(firstTermo == 0)
-					continue;
-				linhaAlterada += "L"+linha+" <- L"+linha+"- ("+firstTermo +" * L"+i+")\n";
-				
-				for(int coluna = system.getNumIncog(); coluna >= 0; coluna--) 
-					matrixAmp[linha][coluna] -=  (firstTermo*matrixAmp[i][coluna]);	
-			}
-			if(linhaAlterada.length() != 0) {
-				VBMudancaLinha = new VBox(5);
-				VBMudancaLinha.getChildren().add(new Label("        ~"));
-				
-				String lA[] = linhaAlterada.split("\n");
-				for(String l : lA)
-					VBMudancaLinha.getChildren().add(new Label(l));
-				HBoxResultado.getChildren().addAll(VBMudancaLinha,transformaSistemaEmGridPaneLabel(new Sistema(matrixAmp,system.getNumEq(),system.getNumIncog())));
-			}
-		}
-		if(sistemaZerado) 
-			HBoxResultado.getChildren().add(transformaSistemaEmGridPaneLabel(system));
-		//return new Sistema(matrixAmp,system.getNumEq(), system.getNumIncog());
-	}
-	
-	/*Se trocar as linhas retorna true, senão false*/
-	private boolean rowsSwap(HBox HBoxResultado, double[][] matrix, int i) {
-		int j = i+1;
-		while(j < matrix.length && matrix[j][i] == 0)
-			j++;
-			
-		if(j == matrix.length) 
-			return false;
-		if(matrix[j][i] != 0) {
-			VBox VBMudancaLinha = new VBox(5);
-			VBMudancaLinha.getChildren().addAll(new Label("    ~"),new Label("L" + i + " <-> L" + j));
-			HBoxResultado.getChildren().add(VBMudancaLinha);
-			
-			double aux;
-			for(int coluna = 0; coluna < matrix[0].length; coluna++) {
-				aux = matrix[i][coluna];
-				matrix[i][coluna] = matrix[j][coluna]; 
-				matrix[j][coluna] = aux;
-			}
-
-			HBoxResultado.getChildren().add(transformaSistemaEmGridPaneLabel(new Sistema(matrix,matrix.length,matrix[0].length)));
-		}
-		return true;
-	}
-	
 	/*Gram-Schmidt*/
 	private void abaVectorConfigurar() {
 		abaVector = new Tab("Gram-Schmidt");
@@ -1076,7 +688,7 @@ public class TelaAbas extends Application  {
 		GridPane GPBase = new GridPane();
 		GridPane GPBaseResposta = new GridPane();
 		
-		geraTabelaBase(GPBase);
+		ControllerBase.getInstance().geraTabelaBase(GPBase, TabelaBase, numVetores, numCoordenadas);
 		
 		ScrollPane SPBase = new ScrollPane(GPBase);
 		SPBase.setMaxSize(300,300);
@@ -1121,11 +733,11 @@ public class TelaAbas extends Application  {
 					if(numVetores < 0 || numCoordenadas < 0) 
 						throw new Exception("Digite apenas valores númericos positivos");
 					
-					TabelaBase = new TextField[numVetores][numCoordenadas+1];
+					TabelaBase = new TextField[numVetores][numCoordenadas];
 					GPBase.getChildren().clear();
-					geraTabelaBase(GPBase);
-					
-				} catch (Exception e) {
+					ControllerBase.getInstance().geraTabelaBase(GPBase, TabelaBase, numVetores, numCoordenadas);
+				
+        		} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Preencha os campos com numeros positivos", "Erro ao gerar Sistema" , JOptionPane.ERROR_MESSAGE);
 				}
         	}
@@ -1134,24 +746,28 @@ public class TelaAbas extends Application  {
         BTOrtogonalizar.setOnAction(new EventHandler() {
         	@Override
         	public void handle(Event arg0) {
-        		Vetor[] base = converteTabelaINBase(TabelaBase, numEq, numCoordenadas);
+        		
+        		Vetor base[] = ControllerBase.getInstance().converteTabelaINBase(TabelaBase, numEq, numCoordenadas);
 				
 				if(base == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
 				
+				//TODO - corrigir operacao de Ortogonalizacao
 				Vetor[] baseOrtoganalizada = Gram_Schmidt.getInstance().orthogonalization(base);
 				if(baseOrtoganalizada == null) //Erro tratato dentro do metodo orthogonalization(a, b)
 					return;
 				
-				geraGridPaneResultado(GPBaseResposta,baseOrtoganalizada);
-				buildResultadoBase(HBoxResultado, base, GPBaseResposta);
+				ControllerBase.getInstance().geraGridPaneResultado(GPBaseResposta, baseOrtoganalizada);
+				ControllerBase.getInstance().buildResultadoBase(HBoxResultado, base, GPBaseResposta);
+			
         	}
 		}); //Fim do Button BTOrtogonalizar
         
         BTOrtonormalizar.setOnAction(new EventHandler() {
         	@Override
         	public void handle(Event arg0) {
-        		Vetor[] base = converteTabelaINBase(TabelaBase, numEq, numCoordenadas);
+        		
+        		Vetor[] base = ControllerBase.getInstance().converteTabelaINBase(TabelaBase, numEq, numCoordenadas); 
 				
 				if(base == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
@@ -1160,141 +776,11 @@ public class TelaAbas extends Application  {
 				if(baseOrtonormalizada == null) //Erro tratato dentro do metodo orthonormalization()
 					return;
 				
-				geraGridPaneResultado(GPBaseResposta,baseOrtonormalizada);
-				buildResultadoBase(HBoxResultado, base, GPBaseResposta);
-        		
+				ControllerBase.getInstance().geraGridPaneResultado(GPBaseResposta, baseOrtonormalizada);
+				ControllerBase.getInstance().buildResultadoBase(HBoxResultado, base, GPBaseResposta);
+			
         	}
 		}); //Fim do Button BTOrtonormalizar
-	}
+	} //Fim da abaVectorConfigurar()
 	
-	//Controi o GridPane da Base e o preenche com TextField para os Vetores e suas Coordenadas
-	private void geraTabelaBase(GridPane GPBase) {
-		TextField celula;
-		Label simbolo;
-		
-		for(int linha = 0; linha < numVetores; linha++) {
-			int coluna = 0;
-			simbolo = new Label("(  ");
-			GPBase.setRowIndex(simbolo,linha);
-			GPBase.setColumnIndex(simbolo, coluna);    
-			GPBase.getChildren().add(simbolo);
-			
-			for(; coluna < numCoordenadas-1; coluna++){
-				celula = new TextField();
-				TabelaBase[linha][coluna] = celula;
-
-				celula.setPrefHeight(30);
-				celula.setPrefWidth(30);
-				celula.setEditable(true);
-				celula.setText("0");
-
-				GPBase.setRowIndex(celula,linha);
-				GPBase.setColumnIndex(celula, 2*coluna+1);    
-				GPBase.getChildren().add(celula);
-				
-				simbolo = new Label(" , ");
-				GPBase.setRowIndex(simbolo,linha);
-				GPBase.setColumnIndex(simbolo, 2*coluna+2);    
-				GPBase.getChildren().add(simbolo);
-			}
-			//ultima Coordenada
-			celula = new TextField();
-			TabelaBase[linha][coluna] = celula;
-
-			celula.setPrefHeight(30);
-			celula.setPrefWidth(30);
-			celula.setEditable(true);
-			celula.setText("0");
-
-			GPBase.setRowIndex(celula,linha);
-			GPBase.setColumnIndex(celula, 2*coluna+1);    
-			GPBase.getChildren().add(celula);
-			
-			simbolo = new Label("  )");
-			GPBase.setRowIndex(simbolo,linha);
-			GPBase.setColumnIndex(simbolo, 2*coluna+2);    
-			GPBase.getChildren().add(simbolo);
-		}
-	}
-	
-
-	//Resgata os valores da tabela dos TextField[][] e o converte em no tipo dado "Vector[]"
-	private Vetor[] converteTabelaINBase(TextField[][] TabelaBase,int numVet, int numCoord){
-
-		try {
-			if(numVet < 1 || numCoord < 1) {
-				JOptionPane.showMessageDialog(null, "O número de Vetores e de Coordenadas devem ser maiores que 0!!", "Erro ao criar a Base" , JOptionPane.ERROR_MESSAGE);
-				return null;
-			}
-			Vetor base[] = new Vetor[numVet];
-			double vetor[] = new double[numCoord];
-			for(int i = 0; i< numVet; i++) {
-				for(int j = 0; j< numCoord; j++) 
-					vetor[j] = Double.parseDouble(TabelaBase[i][j].getText());
-				base[i] = new Vetor(vetor);
-			}
-			return base;
-
-		}catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Digite apenas números nos campos", "Erro ao criar Sistema" , JOptionPane.ERROR_MESSAGE);
-		}
-
-		return null;
-	}
-	
-
-	//Recebe uma Vetor[] e retorna um GridPane formado por Label's com os valores do vetor
-	private GridPane transformaBaseEmGridPaneLabel(Vetor base[]) {
-		Label celula;
-		GridPane GPBase = new GridPane();
-		String vetor;
-		for(int linha = 0; linha < base.length; linha++) {
-			int coluna = 0;
-			vetor = "( ";
-			
-			for(; coluna < base[0].getNumCoordenadas() -1; coluna++)
-				vetor += "" + base[linha].getValorCoordenada(coluna) + ", ";
-			vetor += "" + base[linha].getValorCoordenada(coluna) + " )";
-			
-			celula = new Label(vetor);
-			GPBase.setRowIndex(celula,linha);
-			GPBase.setColumnIndex(celula, coluna);    
-			GPBase.getChildren().add(celula);
-		}
-		return GPBase;
-
-	}
-	
-
-	//atribui valores ao GPSystemResposta
-	private void geraGridPaneResultado(GridPane GPBaseResposta, Vetor base[]) {
-		Label celula;
-		GPBaseResposta.getChildren().clear();
-		
-		String vetor;
-		for(int linha = 0; linha < base.length; linha++) {
-			int coluna = 0;
-			vetor = "( ";
-			
-			for(; coluna < base[0].getNumCoordenadas() -1; coluna++)
-				vetor += "" + base[linha].getValorCoordenada(coluna) + ", ";
-			vetor += "" + base[linha].getValorCoordenada(coluna) + " )";
-			
-			celula = new Label(vetor);
-			GPBaseResposta.setRowIndex(celula,linha);
-			GPBaseResposta.setColumnIndex(celula, coluna);    
-			GPBaseResposta.getChildren().add(celula);
-		}
-
-	}
-	
-
-	//Gera os resultado da operação, onde mostra a matriz e o expoente, junto com a operacao e o resultado 
-	private void buildResultadoBase(HBox HBoxResultado, Vetor base[], GridPane GPMatrizResposta) {
-		GridPane GPSystem = transformaBaseEmGridPaneLabel(base);
-		HBoxResultado.setAlignment(Pos.CENTER);
-		HBoxResultado.getChildren().clear();
-		HBoxResultado.getChildren().addAll(GPSystem, new Label("="), GPMatrizResposta);
-	}
-
 }//close class	
