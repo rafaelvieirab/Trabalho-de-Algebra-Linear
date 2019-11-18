@@ -50,6 +50,12 @@ public class Vetor {
 		return (posCoordenada >= 0 && posCoordenada < coordenadas.length) ?
 				coordenadas[posCoordenada] : 0;
 	}
+
+	//Retorna o valor de uma determinada coordenada do vetor
+	public void setValorCoordenada(int posCoordenada, double valor) {
+		if(posCoordenada >= 0 && posCoordenada < coordenadas.length)
+			this.coordenadas[posCoordenada] = valor;
+	}
 	
 	//retorna todas as coordenadas como um array de double
 	public double[] getCoordenadas() {
@@ -62,10 +68,10 @@ public class Vetor {
 	
 	@Override
 	public String toString() {
-		String acc = "(";
+		String acc = "( ";
 		for(double coordenada : coordenadas)
-			acc+= coordenada +",";
-		acc += ")\n";
+			acc+= coordenada +", ";
+		acc += " )";
 		return acc;
 	}
 }

@@ -41,11 +41,9 @@ public class Gram_Schmidt {
 		return newBase;
 	}
 	
-	//Nome Alternativo:	check Linear Dependency
+	//Verifica se cada vetor é combinação linear dos outros
 	private Vetor[] verificaDependencia(Vetor[] base) {
-		//TODO
-		//Verifica se cada vetor é combinação linear dos outros
-		//=> Basta transformar em um sistema e escalonar
+		//=> Transformar em um sistema e escalona
 		//=> Se tiver menos linhas não zeradas do que colunas(coordenadas), basta completar com as que faltam 
 		
 		Sistema system = vectorArrayToSystem(base);
@@ -54,16 +52,13 @@ public class Gram_Schmidt {
 	
 	//Transforma os vetores em um sistema escalonado
 	private Sistema vectorArrayToSystem(Vetor[] base) {
-		double[][] coordenadas = new double[base.length][base[0].getNumCoordenadas()+1]; //+1, pq tem que ter uma coluan zerada para não bugar o posto
+		double[][] coordenadas = new double[base.length][base[0].getNumCoordenadas()];
 		
-		for(int i = 0; i< base.length; i++) {
-			int j = 0;
-			for( ; j< base[0].getNumCoordenadas(); j++) {
+		for(int i = 0; i< base.length; i++) 
+			for(int j = 0; j< base[0].getNumCoordenadas(); j++) 
 				coordenadas[i][j] = base[i].getValorCoordenada(j);
-			}
-			coordenadas[i][j] = 0;
-		}
-		Sistema system = new Sistema(coordenadas,base.length,base[0].getNumCoordenadas());
+		
+		Sistema system = new Sistema(coordenadas,new double[base.length], base.length,base[0].getNumCoordenadas());
 		return OperationSystem.getInstance().gauss(system);
 	}
 	

@@ -6,9 +6,9 @@ import operation.Gram_Schmidt;
 public class TesteGram_Schmidt {
 
 	public static void main(String[] args) {
-		double[][] vetores = {{1,2,-3},
-							{3,0,1},
-							{1,-5,-3}};
+		double[][] vetores = {{1,0,0},
+							{0,1,0},
+							{0,0,1}};
 		Vetor[] base = new Vetor[vetores.length];
 		
 		for(int i = 0; i < vetores.length; i++)

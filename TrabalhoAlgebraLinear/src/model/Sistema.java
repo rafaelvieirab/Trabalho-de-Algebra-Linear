@@ -21,12 +21,12 @@ public class Sistema {
 		this.coef = new double[numEq][numIncog];
 		this.termo = new double[numEq];
 		
-		for(int i = 0; i < numEq; i++) 
+		for(int i = 0; i < numEq; i++) {
 			for(int j = 0; j < numIncog; j++)
 				this.coef[i][j] = matrizAmp[i][j];
-		
-		for(int i = 0; i < numEq; i++) 
-			this.termo[i] = matrizAmp[i][numIncog]; 
+			this.termo[i] = matrizAmp[i][numIncog];
+		}
+		 
 	}
 	
 	//Retorna o número de Equações (Linhas do Sistema)

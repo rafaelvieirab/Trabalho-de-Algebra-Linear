@@ -175,11 +175,11 @@ public class ControllerSystem {
 		GridPane GPSystem = transformaSistemaEmGridPaneLabel(system); 
 		HBoxResultado.setAlignment(Pos.CENTER);
 		HBoxResultado.getChildren().clear();
-		HBoxResultado.getChildren().addAll(GPSystem, new Label("="));
+		HBoxResultado.getChildren().add(GPSystem);
 		VBox VBMudancaLinha;
 		
 		if(system.getNumEq() <= 1 || system.getNumIncog() <= 1) { 
-			HBoxResultado.getChildren().add(GPSystem);
+			HBoxResultado.getChildren().addAll(new Label("<=>"), GPSystem);
 			return; //return system;
 		}
 		
@@ -195,7 +195,7 @@ public class ControllerSystem {
 			if(matrixAmp[i][i] != 1) { 
 				double divisor = matrixAmp[i][i];
 				VBMudancaLinha = new VBox(5);
-				VBMudancaLinha.getChildren().addAll(new Label("~"),new Label("\nL"+i+" <- L"+i+"/"+divisor+"\n"));
+				VBMudancaLinha.getChildren().addAll(new Label("        ~"),new Label("\nL"+i+" <- L"+i+"/"+divisor+"\n"));
 				HBoxResultado.getChildren().add(VBMudancaLinha);
 				
 				for(int j = 0; j <= system.getNumIncog(); j++) 
@@ -225,19 +225,19 @@ public class ControllerSystem {
 			}
 		}
 		if(sistemaZerado) 
-			HBoxResultado.getChildren().add(GPSystem);
-		//return new Sistema(matrixAmp,system.getNumEq(), system.getNumIncog());
+			HBoxResultado.getChildren().addAll(new Label("<=>"),transformaSistemaEmGridPaneLabel(system));
+		System.out.println("");
 	}
 	
 	/*Gauss-Jordan*/
 	public void gaussJordanAlterado(HBox HBoxResultado,Sistema system) {
 		gaussAdaptadoHBoxResultado(HBoxResultado, system);
+		
 		if(system.getNumEq() <= 1 || system.getNumIncog() <= 1) 
 			return ; //return system;
 		
-		double[][] matrixAmp = null;
+		double[][] matrixAmp = system.getMatrizAmpliada();
 		VBox VBMudancaLinha;
-		boolean sistemaZerado = true; //identifica se todos os coeficientes estao zerados
 		
 		int i;
 		
@@ -248,7 +248,6 @@ public class ControllerSystem {
 		for(; i >=0; i--) {
 			if(matrixAmp[i][i] == 0)  //TODO - Verifica se o Pivo Atual != 0
 				continue;
-			sistemaZerado = false;
 			if(matrixAmp[i][i] != 1) { //Verifica se o Pivo Atual != 1
 				double divisor = matrixAmp[i][i];
 				
@@ -282,10 +281,8 @@ public class ControllerSystem {
 				HBoxResultado.getChildren().addAll(VBMudancaLinha,transformaSistemaEmGridPaneLabel(new Sistema(matrixAmp,system.getNumEq(),system.getNumIncog())));
 			}
 		}
-		if(sistemaZerado) 
-			HBoxResultado.getChildren().add(transformaSistemaEmGridPaneLabel(system));
-		//return new Sistema(matrixAmp,system.getNumEq(), system.getNumIncog());
-	}
+		
+	}//Fim do Gauss-Jordan Alterado
 	
 	/*Se trocar as linhas retorna true, senão false*/
 	public boolean rowsSwap(HBox HBoxResultado, double[][] matrix, int i) {

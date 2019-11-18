@@ -121,6 +121,7 @@ public class TelaAbas extends Application  {
 		HBox HBoxMatrizA = new HBox();
 		HBox HBoxMatrizB = new HBox();
 		HBox HBoxResultado = new HBox(20);
+		ScrollPane SPResultado = new ScrollPane(HBoxResultado);
 		
 		Button BGerarMatrixA = new Button("Gerar");
 		Button BGerarMatrixB = new Button("Gerar");
@@ -131,9 +132,6 @@ public class TelaAbas extends Application  {
 		HBoxMatrizA.getChildren().addAll(new Label("Linha:  "), TFLinhaMatrA, new Label ("  X  "),new Label("Coluna:"), TFColunaMatrA, new Label("  "), BGerarMatrixA);
 		HBoxMatrizB.getChildren().addAll(new Label("Linha:  "), TFLinhaMatrB, new Label ("  X  "),new Label("Coluna:"), TFColunaMatrB, new Label("  "), BGerarMatrixB);
 		
-		
-//		VBoxColunaA.getChildren().addAll(new Label("Matriz A"),HBoxMatrizA,GPMatrizA);
-//		VBoxColunaB.getChildren().addAll(new Label("Matriz B"),HBoxMatrizB,GPMatrizB);
 		VBoxColunaA.getChildren().addAll(new Label("\t\t\t\tMatriz A"),HBoxMatrizA,SPMatrizA);
 		VBoxColunaB.getChildren().addAll(new Label("\t\t\t\tMatriz B"),HBoxMatrizB,SPMatrizB);
 
@@ -163,7 +161,7 @@ public class TelaAbas extends Application  {
 		raiz.setTranslateX(10);
 		raiz.setTranslateY(20);
 		
-        raiz.getChildren().addAll(HBoxLinha, HBoxOpcoesA, HBoxOpcoesB, HBoxResultado);
+        raiz.getChildren().addAll(HBoxLinha, HBoxOpcoesA, HBoxOpcoesB, SPResultado);
         ScrollPane SPRaiz = new ScrollPane(raiz);
         //AbaMatrix.setContent(raiz); // adicionando toda as opcoes na Aba Matriz
         AbaMatrix.setContent(SPRaiz); // adicionando toda as opcoes na Aba Matriz
@@ -173,49 +171,57 @@ public class TelaAbas extends Application  {
 	    BGerarMatrixA.setOnAction(new EventHandler() {
 		
 			public void handle(Event arg0) {
+				if(TFLinhaMatrA.getText().equals("") || TFColunaMatrA.getText().equals("")) {
+					JOptionPane.showMessageDialog(null, "Digite algum valor númerico!!!", "Erro ao gerar matriz A" , JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
 				try {
-					if(TFLinhaMatrA.getText().equals("") || TFColunaMatrA.getText().equals(""))
-						throw new Exception("Digite algum valor númerico!!!");
-					
 					linhaMatrA = Integer.parseInt(TFLinhaMatrA.getText());
 					colunaMatrA = Integer.parseInt(TFColunaMatrA.getText());
 					
-					if(linhaMatrA < 0 || colunaMatrA < 0) 
-						throw new Exception("Digite apenas valores númericos positivos");
-					
+					if(linhaMatrA < 1 || colunaMatrA < 1) {
+						JOptionPane.showMessageDialog(null, "Digite apenas valores númericos positivos", "Erro ao gerar matriz A" , JOptionPane.ERROR_MESSAGE);
+						return;
+					}
 					TabelaMatrizA = new TextField[linhaMatrA][colunaMatrA];
 					GPMatrizA.getChildren().clear();//remove todas as label's anteriores
 					
 					ControllerMatrix.getInstance().geraTabelaMatriz(GPMatrizA, TabelaMatrizA, linhaMatrA, colunaMatrA);
 					
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, e.getMessage(), "Erro ao gerar matriz A" , JOptionPane.ERROR_MESSAGE);
+				}catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Digite apenas valores númericos!!!", "Erro ao gerar matriz A" , JOptionPane.ERROR_MESSAGE);
 				}
+				
 			}//Fim do loop handle(); 
 		  });
 	    
 	    BGerarMatrixB.setOnAction(new EventHandler() {
 					
 			public void handle(Event arg0) {
+				if(TFLinhaMatrB.getText().equals("") || TFColunaMatrB.getText().equals("")) {
+					JOptionPane.showMessageDialog(null, "Digite algum valor númerico!!!", "Erro ao gerar matriz B" , JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
 				try {
-					if(TFLinhaMatrA.getText().equals("") || TFColunaMatrA.getText().equals(""))
-						throw new Exception("Digite algum valor númerico!!!");
-					
 					linhaMatrB = Integer.parseInt(TFLinhaMatrB.getText());
 					colunaMatrB = Integer.parseInt(TFColunaMatrB.getText());
-
-					if(linhaMatrB < 0 || colunaMatrB < 0) 
-						throw new Exception("Digite apenas valores númericos positivos");
 					
+					if(linhaMatrB < 0 || colunaMatrB < 0) {
+						JOptionPane.showMessageDialog(null, "Digite apenas valores númericos positivos", "Erro ao gerar matriz B" , JOptionPane.ERROR_MESSAGE);
+						return;
+					}
 					TabelaMatrizB = new TextField[linhaMatrB][colunaMatrB];
-					GPMatrizB.getChildren().clear();//remove todas as label's anteriores
+					GPMatrizB.getChildren().clear();
 					ControllerMatrix.getInstance().geraTabelaMatriz(GPMatrizB, TabelaMatrizB, linhaMatrB, colunaMatrB);
 					
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, e.getMessage(), "Erro ao gerar matriz B" , JOptionPane.ERROR_MESSAGE);
+				}catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Digite apenas valores númericos!!!", "Erro ao gerar matriz B" , JOptionPane.ERROR_MESSAGE);
 				}
-			} // Fim do handle
-		  });
+				
+			} 
+		  });// Fim do Button Gerar MAtrizB
 		
 		BSomaMatrizes.setOnAction(new EventHandler() {
 			
@@ -563,26 +569,20 @@ public class TelaAbas extends Application  {
         BTGauss.setOnAction(new EventHandler() {
         	@Override
         	public void handle(Event arg0) {
-        		//TODO
-        		
         		Sistema system = ControllerSystem.getInstance().converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
-				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
-				
+				if(system == null)
+					return; //Erro tratado em converteGridPaneINSistema()
 				ControllerSystem.getInstance().gaussAdaptadoHBoxResultado(HBoxResultado, system);
-//				Sistema resul = OperationSystem.getInstance().gauss(system);
-//				if(resul == null) return; //Erro tratato dentro do metodo gauss()
-//				//geraGridPaneResultado(GPSystemResposta, resul);
-        		//buildResultadoSystem(HBoxResultado, system, GPSystemResposta);
+				
         	}
         }); //Fim do Button 
         
         BTGauss_Jordan.setOnAction(new EventHandler() {
         	@Override
         	public void handle(Event arg0) {
-        		//TODO
         		Sistema system = ControllerSystem.getInstance().converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
-        		
-				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
+        		if(system == null)
+					return; //Erro tratado em converteGridPaneINSistema()
 				ControllerSystem.getInstance().gaussJordanAlterado(HBoxResultado, system);
         		
         	}
@@ -650,6 +650,7 @@ public class TelaAbas extends Application  {
         		GridPane GPMatrixL = ControllerMatrix.getInstance().transformaMatrizEmGridPaneLabel(matrixLU[1]);
         		//TODO - Acho que é L*U
         		
+        		
         		GridPane GPSystemOriginal = ControllerSystem.getInstance().transformaSistemaEmGridPaneLabel(system);
     			HBoxResultado.setAlignment(Pos.CENTER);
     			HBoxResultado.getChildren().clear();
@@ -686,8 +687,6 @@ public class TelaAbas extends Application  {
 		TFNumVetores.setMaxSize(DimensoesWidth, DimensoesHeight);
 		
 		GridPane GPBase = new GridPane();
-		GridPane GPBaseResposta = new GridPane();
-		
 		ControllerBase.getInstance().geraTabelaBase(GPBase, TabelaBase, numVetores, numCoordenadas);
 		
 		ScrollPane SPBase = new ScrollPane(GPBase);
@@ -757,8 +756,10 @@ public class TelaAbas extends Application  {
 				if(baseOrtoganalizada == null) //Erro tratato dentro do metodo orthogonalization(a, b)
 					return;
 				
-				ControllerBase.getInstance().geraGridPaneResultado(GPBaseResposta, baseOrtoganalizada);
-				ControllerBase.getInstance().buildResultadoBase(HBoxResultado, base, GPBaseResposta);
+				Label celula;
+				
+				VBox VBBaseOrto = ControllerBase.getInstance().geraGridPaneResultado(baseOrtoganalizada);
+				ControllerBase.getInstance().buildResultadoBase(HBoxResultado, base, VBBaseOrto);
 			
         	}
 		}); //Fim do Button BTOrtogonalizar
@@ -775,9 +776,9 @@ public class TelaAbas extends Application  {
 				Vetor[] baseOrtonormalizada = Gram_Schmidt.getInstance().orthonormalization(base);
 				if(baseOrtonormalizada == null) //Erro tratato dentro do metodo orthonormalization()
 					return;
-				
-				ControllerBase.getInstance().geraGridPaneResultado(GPBaseResposta, baseOrtonormalizada);
-				ControllerBase.getInstance().buildResultadoBase(HBoxResultado, base, GPBaseResposta);
+					
+				VBox VBBaseOrtonor = ControllerBase.getInstance().geraGridPaneResultado(baseOrtonormalizada);
+				ControllerBase.getInstance().buildResultadoBase(HBoxResultado, base, VBBaseOrtonor);
 			
         	}
 		}); //Fim do Button BTOrtonormalizar

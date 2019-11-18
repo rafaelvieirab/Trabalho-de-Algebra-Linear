@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import model.Vetor;
 
 public class ControllerBase {
@@ -74,14 +75,16 @@ public class ControllerBase {
 				JOptionPane.showMessageDialog(null, "O número de Vetores e de Coordenadas devem ser maiores que 0!!", "Erro ao criar a Base" , JOptionPane.ERROR_MESSAGE);
 				return null;
 			}
+			
 			Vetor base[] = new Vetor[numVet];
-			double vetor[] = new double[numCoord];
+			Vetor vector;
 			for(int i = 0; i< numVet; i++) {
+				vector = new Vetor(numCoord);
 				for(int j = 0; j< numCoord; j++) 
-					vetor[j] = Double.parseDouble(TabelaBase[i][j].getText());
-				base[i] = new Vetor(vetor);
+					vector.setValorCoordenada(j, Double.parseDouble(TabelaBase[i][j].getText()));
+				base[i] = vector;
 			}
-
+			
 			return base;
 
 		}catch (Exception e) {
@@ -114,36 +117,20 @@ public class ControllerBase {
 
 	}
 	
-
-	//atribui valores ao GPSystemResposta
-	public void geraGridPaneResultado(GridPane GPBaseResposta, Vetor base[]) {
-		Label celula;
-		GPBaseResposta.getChildren().clear();
-		
-		String vetor;
-		for(int linha = 0; linha < base.length; linha++) {
-			int coluna = 0;
-			vetor = "( ";
-			
-			for(; coluna < base[0].getNumCoordenadas() -1; coluna++)
-				vetor += base[linha].getValorCoordenada(coluna) + ", ";
-			vetor += base[linha].getValorCoordenada(coluna) + " )";
-			
-			celula = new Label(vetor);
-			GPBaseResposta.setRowIndex(celula,linha);
-			GPBaseResposta.setColumnIndex(celula, coluna);    
-			GPBaseResposta.getChildren().add(celula);
-		}
-
+	//recebe a base e gera um VBox deacordo com as coordenadas(toString()) de cada vetor
+	public VBox geraGridPaneResultado(Vetor base[]) {
+		VBox VBVetores = new VBox(5);
+		for(Vetor vetor : base) 
+			VBVetores.getChildren().add(new Label(vetor.toString()));
+		return VBVetores;
 	}
 	
-
-	//Gera os resultado da operação, onde mostra a matriz e o expoente, junto com a operacao e o resultado 
-	public void buildResultadoBase(HBox HBoxResultado, Vetor base[], GridPane GPMatrizResposta) {
+	//Gera o HoxResultado, com a Base Anterior e a Base Resposta
+	public void buildResultadoBase(HBox HBoxResultado, Vetor base[], VBox VBResposta) {
 		GridPane GPSystem = transformaBaseEmGridPaneLabel(base);
 		HBoxResultado.setAlignment(Pos.CENTER);
 		HBoxResultado.getChildren().clear();
-		HBoxResultado.getChildren().addAll(GPSystem, new Label("="), GPMatrizResposta);
+		HBoxResultado.getChildren().addAll(GPSystem, new Label("="), VBResposta);
 	}
 
 }
