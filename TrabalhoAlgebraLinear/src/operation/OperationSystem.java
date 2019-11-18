@@ -226,7 +226,7 @@ public class OperationSystem {
 				matrixU[linha][coluna] = matrixLU[linha][coluna];
 				matrixL[linha][coluna] = matrixLU[linha][coluna + system.getNumIncog()]; 
 			}
-		Matriz lu[] = {new Matriz(matrixU),new Matriz(matrixU)};
+		Matriz lu[] = {new Matriz(matrixU),new Matriz(matrixL	)};
 		return lu;
 //		//Mostrando na tela
 //		System.out.println("\nMatriz U:");

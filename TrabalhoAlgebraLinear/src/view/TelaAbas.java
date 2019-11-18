@@ -79,16 +79,16 @@ public class TelaAbas extends Application  {
 		
 		AbaMatrix = new Tab("Matriz");
 		
-		int DimensoesHeight =  20; // altura
-		int DimensoesWidth = 50 ; // largura
+		int DimensoesHeight =  20; 
+		int DimensoesWidth = 50 ; 
 		
 		final TextField TFColunaMatrA = new TextField("3");
 		final TextField TFLinhaMatrA = new TextField("3");
-		TFLinhaMatrA.setMaxSize(DimensoesWidth, DimensoesHeight);
-		TFColunaMatrA.setMaxSize(DimensoesWidth, DimensoesHeight);
-		
 		final TextField TFColunaMatrB = new TextField("3");
 		final TextField TFLinhaMatrB = new TextField("3");
+		
+		TFLinhaMatrA.setMaxSize(DimensoesWidth, DimensoesHeight);
+		TFColunaMatrA.setMaxSize(DimensoesWidth, DimensoesHeight);
 		TFLinhaMatrB.setMaxSize(DimensoesWidth, DimensoesHeight);
 		TFColunaMatrB.setMaxSize(DimensoesWidth, DimensoesHeight);
 		
@@ -100,24 +100,20 @@ public class TelaAbas extends Application  {
 		ControllerMatrix.getInstance().geraTabelaMatriz(GPMatrizB, TabelaMatrizB, linhaMatrB, colunaMatrB);
 		
 		ScrollPane SPMatrizA = new ScrollPane(GPMatrizA);
-		SPMatrizA.setMaxHeight(200);
-		SPMatrizA.setMaxWidth(375);
+		SPMatrizA.setMaxSize(300, 150);
+		SPMatrizA.setMinSize(100, 80);
 		
 		ScrollPane SPMatrizB = new ScrollPane(GPMatrizB);
-		SPMatrizB.setMaxHeight(200);
-		SPMatrizB.setMaxWidth(375);
+		SPMatrizB.setMaxSize(300, 150);
+		SPMatrizB.setMinSize(100, 80);
 		
-		/* Uma Linha pode ser representada pelo HBox e uma coluna por VBox;
-		 * 	A ideia aqui é organizar tudo que representa a matriz A (bottoes, TextField, matrizA) em uma 
-		 * coluna e o que representa a matriz B em outra coluna;
-		 * Assim é só uni-las em uma Linha (HBox)
-		 * */
 		VBox VBoxColunaA = new VBox(10);
 		VBox VBoxColunaB = new VBox(10);
+		VBox VBoxColunaAB = new VBox(10);
 		
-		VBoxColunaB.setTranslateX(100);// TODO: O que acontece quando usa-se esse valor?
-	
-		HBox HBoxLinha = new HBox(10);
+		VBoxColunaB.setTranslateX(100);
+		
+		HBox HBoxLinha = new HBox(15);
 		HBox HBoxMatrizA = new HBox();
 		HBox HBoxMatrizB = new HBox();
 		HBox HBoxResultado = new HBox(20);
@@ -125,49 +121,63 @@ public class TelaAbas extends Application  {
 		
 		Button BGerarMatrixA = new Button("Gerar");
 		Button BGerarMatrixB = new Button("Gerar");
-
 		BGerarMatrixA.setMaxSize(80, 100);
 		BGerarMatrixB.setMaxSize(80, 100);
 		
 		HBoxMatrizA.getChildren().addAll(new Label("Linha:  "), TFLinhaMatrA, new Label ("  X  "),new Label("Coluna:"), TFColunaMatrA, new Label("  "), BGerarMatrixA);
 		HBoxMatrizB.getChildren().addAll(new Label("Linha:  "), TFLinhaMatrB, new Label ("  X  "),new Label("Coluna:"), TFColunaMatrB, new Label("  "), BGerarMatrixB);
 		
-		VBoxColunaA.getChildren().addAll(new Label("\t\t\t\tMatriz A"),HBoxMatrizA,SPMatrizA);
-		VBoxColunaB.getChildren().addAll(new Label("\t\t\t\tMatriz B"),HBoxMatrizB,SPMatrizB);
-
-		HBoxLinha.getChildren().addAll(VBoxColunaA,VBoxColunaB);
-		
 		//Butões para realizar ações nas matrizes
 		//Open - Organizando Button
-		Button BSomaMatrizes = new Button("Soma A e B");
-		Button BSubMatrizes = new Button("Subtração A e B");
-		Button BMultEscalar = new Button("Multiplicar A por Escalar");
-		Button BMultiplicacaoMatrizes = new Button("Multiplica A e B");
-		Button BTranposicao = new Button("Tranposicao Matriz");
-		Button BPotencia = new Button("Potencia de uma Matriz");
-		Button BInversa = new Button("Inversa de uma Matriz");
-		Button BMatrCofatora = new Button("Matriz Cofatora");
-		Button BMatrAdjunta = new Button("Matriz Adjunta");
-		Button BDeterminante = new Button("Determinantes");
+		//Buttons de A
+		Button BMultEscalarA = new Button("Multiplica A por Escalar");
+		Button BTranposicaoA = new Button("Tranposição de A");
+		Button BPotenciaA = new Button("Potência de A");
+		Button BInversaA = new Button("Inversa de A");
+		Button BMatrCofatoraA = new Button("Cofatora deA");
+		Button BMatrAdjuntaA = new Button("Adjunta de A");
+		Button BDeterminanteA = new Button("det(A)");
+		//Buttons de A com B
+		Button BSomaMatrizes = new Button("A + B");
+		Button BSubMatrizes = new Button("A - B");
+		Button BMultiplicacaoMatrizes = new Button("A * B");
+		//Buttons de B
+		Button BMultEscalarB = new Button("Multiplica B por Escalar");
+		Button BTranposicaoB = new Button("Tranposição de B");
+		Button BPotenciaB = new Button("Potência de B");
+		Button BInversaB = new Button("Inversa de B");
+		Button BMatrCofatoraB = new Button("Cofatora de B");
+		Button BMatrAdjuntaB = new Button("Adjunta de B");
+		Button BDeterminanteB = new Button("det(B)");
 		
-		HBox HBoxOpcoesA = new HBox(30);
-		HBox HBoxOpcoesB = new HBox(30);
+		HBox HBBotoesA1 = new HBox(10);
+		HBox HBBotoesA2 = new HBox(10);
+		HBox HBBotoesB1 = new HBox(10);
+		HBox HBBotoesB2 = new HBox(10);
 		
-		HBoxOpcoesA.getChildren().addAll(BSomaMatrizes, BSubMatrizes, BMultEscalar, BMultiplicacaoMatrizes,BTranposicao);
-		HBoxOpcoesB.getChildren().addAll(BPotencia,BInversa,BMatrCofatora,BMatrAdjunta,BDeterminante);
-		//Close - Organizando Button
-
+		HBBotoesA1.getChildren().addAll(BMultEscalarA, BTranposicaoA, BPotenciaA);
+		HBBotoesA2.getChildren().addAll(BInversaA,BMatrCofatoraA, BMatrAdjuntaA, BDeterminanteA);
+		
+		HBBotoesB1.getChildren().addAll(BMultEscalarB, BTranposicaoB, BPotenciaB);
+		HBBotoesB2.getChildren().addAll(BInversaB,BMatrCofatoraB, BMatrAdjuntaB, BDeterminanteB);
+		
+		//Adionando Campos as colunas
+		VBoxColunaA.getChildren().addAll(new Label("\t\t\t\tMatriz A"),HBoxMatrizA,SPMatrizA,HBBotoesA1,HBBotoesA2);
+		VBoxColunaAB.getChildren().addAll(new Label(""),new Label(""),BSomaMatrizes,BSubMatrizes,BMultiplicacaoMatrizes);
+		VBoxColunaB.getChildren().addAll(new Label("\t\t\t\tMatriz B"),HBoxMatrizB,SPMatrizB,HBBotoesB1,HBBotoesB2);
+		
+		HBoxLinha.getChildren().addAll(VBoxColunaA, VBoxColunaAB, VBoxColunaB);
+		
 		VBox raiz = new VBox(10);
 		raiz.setTranslateX(10);
 		raiz.setTranslateY(20);
 		
-        raiz.getChildren().addAll(HBoxLinha, HBoxOpcoesA, HBoxOpcoesB, SPResultado);
+        raiz.getChildren().addAll(HBoxLinha, SPResultado);
+        
         ScrollPane SPRaiz = new ScrollPane(raiz);
-        //AbaMatrix.setContent(raiz); // adicionando toda as opcoes na Aba Matriz
-        AbaMatrix.setContent(SPRaiz); // adicionando toda as opcoes na Aba Matriz
+        AbaMatrix.setContent(SPRaiz); 
         AbaMatrix.setClosable(false);
 		
-        //Acoes dos butoes
 	    BGerarMatrixA.setOnAction(new EventHandler() {
 		
 			public void handle(Event arg0) {
@@ -285,7 +295,7 @@ public class TelaAbas extends Application  {
 			}
 		});
 		
-		BMultEscalar.setOnAction(new EventHandler() {
+		BMultEscalarA.setOnAction(new EventHandler() {
 
 			@Override
 			public void handle(Event arg0) {
@@ -310,7 +320,7 @@ public class TelaAbas extends Application  {
 			}	
 		});//fim do EventHandler
 		
-		BTranposicao.setOnAction(new EventHandler() {
+		BTranposicaoA.setOnAction(new EventHandler() {
 			@Override
 			public void handle(Event arg0) {
 				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
@@ -345,7 +355,7 @@ public class TelaAbas extends Application  {
 			}	
 		});//fim do EventHandler
 		
-		BDeterminante.setOnAction(new EventHandler() {
+		BDeterminanteA.setOnAction(new EventHandler() {
 			@Override
 			public void handle(Event arg0) {
 				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
@@ -381,7 +391,7 @@ public class TelaAbas extends Application  {
 			}	
 		});//fim do EventHandler
 
-		BPotencia.setOnAction(new EventHandler() {
+		BPotenciaA.setOnAction(new EventHandler() {
 			@Override
 			public void handle(Event arg0) {
 				// //Receber o valor que deve ser potenciado e a matriz
@@ -404,7 +414,7 @@ public class TelaAbas extends Application  {
 			}
 		});//fim do EventHandler
 
-		BMatrAdjunta.setOnAction(new EventHandler() {
+		BMatrAdjuntaA.setOnAction(new EventHandler() {
 			@Override
 			public void handle(Event arg0) {
 				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
@@ -427,7 +437,7 @@ public class TelaAbas extends Application  {
 			}
 		});//fim do EventHandler
 		
-		BMatrCofatora.setOnAction(new EventHandler() {
+		BMatrCofatoraA.setOnAction(new EventHandler() {
 			@Override
 			public void handle(Event arg0) {
 				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
@@ -449,10 +459,211 @@ public class TelaAbas extends Application  {
 			}
 		});//fim do EventHandler
 		
-		BInversa.setOnAction(new EventHandler() {
+		BInversaA.setOnAction(new EventHandler() {
 			@Override
 			public void handle(Event arg0) {
 				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
+				
+				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
+					return;
+				
+				Matriz resul = OperationMatriz.getInstance().inverse(matrix);
+				if(resul == null) //Erro tratato dentro do metodo inverse(a, b)
+					return;
+				
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
+				
+				Label celula;
+				GridPane GPMatrix = new GridPane();
+				for(int linha = 0; linha < matrix.getLinha(); linha++)
+		            for(int coluna = 0; coluna < matrix.getColuna(); coluna++){
+		            	celula = new Label(" " + matrix.value(linha, coluna));
+		            	GPMatrix.setRowIndex(celula,linha);
+		            	GPMatrix.setColumnIndex(celula, coluna);    
+		            	GPMatrix.getChildren().add(celula);
+		            }
+				
+				celula = new Label("  -1");
+            	GPMatrix.setRowIndex(celula,0);
+            	GPMatrix.setColumnIndex(celula, matrix.getColuna()+1);    
+            	GPMatrix.getChildren().add(celula);
+            	
+				HBoxResultado.setAlignment(Pos.CENTER);
+				HBoxResultado.getChildren().clear();
+				HBoxResultado.getChildren().addAll(GPMatrix, new Label("="), GPMatrizResposta);
+				
+			}
+		});//fim do EventHandler
+
+		BMultEscalarB.setOnAction(new EventHandler() {
+
+			@Override
+			public void handle(Event arg0) {
+				//Receber o valor que deve ser multiplicado e a matriz
+				
+				
+				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizB, linhaMatrB, colunaMatrB);
+				
+				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
+					return;
+				
+				double scalar;
+				try{scalar = Double.parseDouble(JOptionPane.showInputDialog(null, "Digite o valor do Escalar:"));}
+				catch (Exception e) {scalar = 0;}
+				
+				Matriz resul = OperationMatriz.getInstance().scalarMultiplication(scalar, matrix);
+				if(resul == null) //Erro tratato dentro do metodo scalarMultiplication()
+					return;
+				
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
+				ControllerMatrix.getInstance().buildResultadoOneMatrixWithScalar(HBoxResultado, matrix, scalar, GPMatrizResposta);
+				
+			}	
+		});//fim do EventHandler
+		
+		BTranposicaoB.setOnAction(new EventHandler() {
+			@Override
+			public void handle(Event arg0) {
+				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizB, linhaMatrB, colunaMatrB);
+				
+				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
+					return;
+				
+				Matriz resul = OperationMatriz.getInstance().transposition(matrix);
+				if(resul == null) //Erro tratato dentro do metodo transposition(a, b)
+					return;
+				
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
+				
+				Label celula;
+				GridPane GPMatrix = new GridPane();
+				for(int linha = 0; linha < matrix.getLinha(); linha++)
+		            for(int coluna = 0; coluna < matrix.getColuna(); coluna++){
+		            	celula = new Label(" " + matrix.value(linha, coluna));
+		            	GPMatrix.setRowIndex(celula,linha);
+		            	GPMatrix.setColumnIndex(celula, coluna);    
+		            	GPMatrix.getChildren().add(celula);
+		            }
+				
+				celula = new Label("  T");
+            	GPMatrix.setRowIndex(celula,0);
+            	GPMatrix.setColumnIndex(celula, matrix.getColuna()+1);    
+            	GPMatrix.getChildren().add(celula);
+            	
+				HBoxResultado.setAlignment(Pos.CENTER);
+				HBoxResultado.getChildren().clear();
+				HBoxResultado.getChildren().addAll(GPMatrix, new Label(" = "), GPMatrizResposta);
+			}	
+		});//fim do EventHandler
+		
+		BDeterminanteB.setOnAction(new EventHandler() {
+			@Override
+			public void handle(Event arg0) {
+				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizB, linhaMatrB, colunaMatrB);
+				
+				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
+					return;
+				
+				double resul = OperationMatriz.getInstance().determinante(matrix);
+				
+				Label celula;
+				GridPane GPMatrix = new GridPane();
+				for(int linha = 0; linha < matrix.getLinha(); linha++){
+					celula = new Label("| ");
+	            	GPMatrix.setRowIndex(celula,linha);
+	            	GPMatrix.setColumnIndex(celula, 0);    
+	            	GPMatrix.getChildren().add(celula);
+		            for(int coluna = 0; coluna < matrix.getColuna(); coluna++){
+		            	celula = new Label(" " + matrix.value(linha, coluna));
+		            	GPMatrix.setRowIndex(celula,linha);
+		            	GPMatrix.setColumnIndex(celula, coluna+1);    
+		            	GPMatrix.getChildren().add(celula);
+		            }
+		            celula = new Label(" |");
+	            	GPMatrix.setRowIndex(celula,linha);
+	            	GPMatrix.setColumnIndex(celula, matrix.getColuna()+1);    
+	            	GPMatrix.getChildren().add(celula);
+				}
+            	
+				HBoxResultado.setAlignment(Pos.CENTER);
+				HBoxResultado.getChildren().clear();
+				HBoxResultado.getChildren().addAll(GPMatrix, new Label(" = "), new Label("" + resul));
+			
+			}	
+		});//fim do EventHandler
+
+		BPotenciaB.setOnAction(new EventHandler() {
+			@Override
+			public void handle(Event arg0) {
+				
+				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizB, linhaMatrB, colunaMatrB);
+				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
+					return;
+				
+				int expoente;
+				try{expoente = Integer.parseInt(JOptionPane.showInputDialog(null, "Digite o valor do Escalar:"));}
+				catch (Exception e) {expoente = 0;}
+				
+				
+				Matriz resul = OperationMatriz.getInstance().potency(matrix, expoente);
+				if(resul == null) //Erro tratato dentro do metodo potency()
+					return;
+				
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
+				ControllerMatrix.getInstance().buildResultadoOneMatrixPotency(HBoxResultado, matrix, expoente, GPMatrizResposta);
+				
+			}
+		});//fim do EventHandler
+
+		BMatrAdjuntaB.setOnAction(new EventHandler() {
+			@Override
+			public void handle(Event arg0) {
+				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizB, linhaMatrB, colunaMatrB);
+				
+				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
+					return;
+				
+				Matriz resul = OperationMatriz.getInstance().adjunta(matrix);
+				if(resul == null) //Erro tratato dentro do metodo adjunta()
+					return;
+				
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
+				
+				GridPane GPAdjunta = ControllerMatrix.getInstance().transformaMatrizEmGridPaneLabel(matrix);
+				
+				HBoxResultado.setAlignment(Pos.CENTER);
+				HBoxResultado.getChildren().clear();
+				HBoxResultado.getChildren().addAll(new Label("Adjunta:"), GPAdjunta, new Label("="),GPMatrizResposta);
+				
+			}
+		});//fim do EventHandler
+		
+		BMatrCofatoraB.setOnAction(new EventHandler() {
+			@Override
+			public void handle(Event arg0) {
+				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizB, linhaMatrB, colunaMatrB);
+				
+				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
+					return;
+				
+				Matriz resul = OperationMatriz.getInstance().matrizCofatora(matrix);
+				if(resul == null) //Erro tratato dentro do metodo adjunta()
+					return;
+				
+				ControllerMatrix.getInstance().geraGridPaneResultado(GPMatrizResposta, resul);
+				GridPane GPCofatora = ControllerMatrix.getInstance().transformaMatrizEmGridPaneLabel(matrix);
+				
+				HBoxResultado.setAlignment(Pos.CENTER);
+				HBoxResultado.getChildren().clear();
+				HBoxResultado.getChildren().addAll(new Label("Cofatora:"), GPCofatora, new Label("="),GPMatrizResposta);
+				
+			}
+		});//fim do EventHandler
+		
+		BInversaB.setOnAction(new EventHandler() {
+			@Override
+			public void handle(Event arg0) {
+				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizB, linhaMatrB, colunaMatrB);
 				
 				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
 					return;

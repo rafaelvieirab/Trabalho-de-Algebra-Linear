@@ -100,8 +100,9 @@ public class ControllerMatrix {
 				return null;
 			}
 			double[][] matrix = new double[linha][coluna];
+			
 			for(int i = 0; i< linha; i++)
-				for(int j = 0; j< linha; j++) 
+				for(int j = 0; j< coluna; j++) 
 					matrix[i][j] = Double.parseDouble(TabelaMatriz[i][j].getText());	
 			return new Matriz(matrix);
 			

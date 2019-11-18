@@ -43,9 +43,6 @@ public class Gram_Schmidt {
 	
 	//Verifica se cada vetor é combinação linear dos outros
 	private Vetor[] verificaDependencia(Vetor[] base) {
-		//=> Transformar em um sistema e escalona
-		//=> Se tiver menos linhas não zeradas do que colunas(coordenadas), basta completar com as que faltam 
-		
 		Sistema system = vectorArrayToSystem(base);
 		return completeBase(system);
 	}
@@ -73,17 +70,10 @@ public class Gram_Schmidt {
 	}
 	*/
 	
-	//Completa a base com os vetores independentes restantes
+	//TODO - Completa a base com os vetores independentes restantes
 	private Vetor[] completeBase(Sistema system) {
-		//TODO
-	//??? Fazer uma função para tirar as linhas nulas  ????
-	/*??? Fazer uma função para ordenar as linhas de forma que todos na diagonal sejam igual a 1
-	 * 	=> pode acontecer do vetor ter todos vetores independentes, que podem está no final do sistema,
-	 *  e antes dele estiverem várias linhas zeradas).
-	 */
 		double[][] array = system.getMatrizCoef();
 		
-		//Isso ainda é preciso?
 		for(int i = 0 ; i < array.length; i++) 
 			if(array[i][i] == 0) {//Sobrescreve a linha atual, criando o vetor independe que estava faltando
 				for(int j = 0; j < system.getNumIncog(); j++) 
@@ -96,12 +86,6 @@ public class Gram_Schmidt {
 		for(int i = 0 ; i< array.length; i++) 
 			vectorArray[i] = new Vetor(array[i]);
 		return vectorArray;
-	}
-	
-	//TODO - Não está sendo usado
-	//Verifica se dois vetores são ortogonais entre si
-	public boolean isOrthogonal(Vetor vector1,Vetor vector2) {
-		return productInternal(vector1, vector2) == 0;
 	}
 	
 	//Retorna o Produto Interno entre dois vetores
