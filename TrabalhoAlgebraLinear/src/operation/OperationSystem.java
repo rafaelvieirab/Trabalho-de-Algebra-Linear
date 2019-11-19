@@ -192,83 +192,91 @@ public class OperationSystem {
 	
 	/*Fatora o sistema na matriz L e na matriz U*/
 	public Matriz[] fatoracaoLU(Sistema system) {
-		//TODO
-		//L é uma matriz triangular inferior, oriunda da Identidade com uma diagonal Principal igual 1
-		//U "  "	"		 "	 	superior, oriunda da matriz Original
-		/*=>Como obter L e U?		
-			*=> Coloca-se a matriz dos COEFICIENTES da original ao lado da matriz identidade;
-			*=>Realiza Gauss em cima das duas;
-			*=> A matriz identidade escalada é a matriz L (vai continuar tendo a diagonal == 1)
-			*=> A matriz original escalada é a matriz U
-		*/
-		double det = OperationMatriz.getInstance().determinante(new Matriz(system.getMatrizCoef()));
-		if(det == 0) {
-			JOptionPane.showMessageDialog(null, "A Matriz dos Coeficientes tem determinante igual a 0, logo não admite inversa e nem FatoraçãoLU!", "Erro na Fatoração LU do sistema" , JOptionPane.ERROR_MESSAGE);
-			//return null;
+		
+		if(system.getNumEq() != system.getNumIncog()) {
+			JOptionPane.showMessageDialog(null, "O número de equações é diferente do de incognitas"
+					+ ", logo não é possivel fatorar a Matriz dos Coeficientes", "Fatoração LU", JOptionPane.ERROR_MESSAGE);
+			return null;
 		}
-		double[][] matrixLU = buildMatrixIdentityOriginalLU(system);
-		matrixLU = gauss(new Sistema(matrixLU, system.getNumEq(), 2*system.getNumIncog())).getMatrizAmpliada();
 		
-		/*Garante que a diagonal Principal da matriz L será igual a 1*/
-		for(int linha = 0; linha < system.getNumEq(); linha++) 
-			if(matrixLU[linha][linha+system.getNumIncog()] != 1) {
-				double mult = 1/matrixLU[linha][linha+system.getNumIncog()];
-				for(int coluna = 0; coluna < 2*system.getNumIncog(); coluna++) 
-					matrixLU[linha][coluna] *= mult;
-			}
+		if(OperationMatriz.getInstance().determinante(new Matriz(system.getMatrizCoef())) == 0) {
+			JOptionPane.showMessageDialog(null, "A Matriz dos Coeficientes tem determinante igual a 0, logo não admite inversa e nem FatoraçãoLU!", "Erro na Fatoração LU do sistema" , JOptionPane.ERROR_MESSAGE);
+			return null;
+		}
 		
-		//Separa a matriz escalonada nas matrizes L e U correspondentes
-		double[][] matrixU = new double[system.getNumEq()][system.getNumIncog()];
-		double[][] matrixL = new double[system.getNumEq()][system.getNumIncog()];
+		double matrixLower[][] = new double[system.getNumEq()][system.getNumIncog()];
 		
-		for(int linha = 0; linha < system.getNumEq(); linha++) 
-			for(int coluna = 0; coluna < system.getNumIncog(); coluna++) {
-				matrixU[linha][coluna] = matrixLU[linha][coluna];
-				matrixL[linha][coluna] = matrixLU[linha][coluna + system.getNumIncog()]; 
-			}
-		Matriz lu[] = {new Matriz(matrixU),new Matriz(matrixL	)};
+		//Contruindo a matriz identidade
+		for(int i = 0; i < system.getNumEq(); i++)
+			for(int j = 0; j < system.getNumIncog(); j++)
+				matrixLower[i][j] = 0;
+		for(int i = 0; i < system.getNumEq(); i++)
+			matrixLower[i][i] = 1;
+		
+		double matrixUpper[][] = gaussLU(system, matrixLower).getMatrizCoef();
+		
+//		/*Garante que a diagonal Principal da matriz L será igual a 1*/
+//		for(int linha = 0; linha < system.getNumEq(); linha++) 
+//			if(matrixLower[linha][linha] != 1) {
+//				double mult = 1/matrixLower[linha][linha];
+//				for(int coluna = 0; coluna < system.getNumIncog(); coluna++) 
+//					matrixLower[linha][coluna] *= mult;
+//			}
+		
+		Matriz lu[] = {new Matriz(matrixUpper),new Matriz(matrixLower)};
+		//return lu;
+		//Mostrando na tela
+		System.out.println("\nMatriz U:");
+		for(int linha = 0; linha < system.getNumEq(); linha++) {
+			System.out.println("");
+			for(int coluna = 0; coluna < system.getNumIncog(); coluna++) 
+				System.out.print(matrixUpper[linha][coluna]+" "); 
+		}
+		System.out.println("\n\nMatriz L:");
+		for(int linha = 0; linha < system.getNumEq(); linha++) {
+			System.out.println("");
+			for(int coluna = 0; coluna < system.getNumIncog(); coluna++) 
+				System.out.print(matrixLower[linha][coluna]+" "); 
+		}
+		
 		return lu;
-//		//Mostrando na tela
-//		System.out.println("\nMatriz U:");
-//		for(int linha = 0; linha < system.getNumEq(); linha++) {
-//			System.out.println("");
-//			for(int coluna = 0; coluna < system.getNumIncog(); coluna++) 
-//				System.out.print(matrixU[linha][coluna]+" "); 
-//		}
-//		System.out.println("\n\nMatriz L:");
-//		for(int linha = 0; linha < system.getNumEq(); linha++) {
-//			System.out.println("");
-//			for(int coluna = 0; coluna < system.getNumIncog(); coluna++) 
-//				System.out.print(matrixL[linha][coluna]+" "); 
-//		}
-//		System.out.println();
 		
 	} //fim da fatoracaoLU
-
-	/*Constroi uma matriz no qual
-	 	*  a metade dos coeficientes são os coeficientes do sistema
-	 	*  e a outra metade, representa a matriz identidade
-	 	*  já a ultima coluna é formada somente de 0's = representando os termos independentes
-	 	*  */
-	private double[][] buildMatrixIdentityOriginalLU(Sistema system){
-		double[][] matrixLU = new double[system.getNumEq()][2*system.getNumIncog()+1];
-		
-		for(int linha = 0; linha < system.getNumEq(); linha++) {
-			int coluna = 0;
-			//Copiando os valores da matriz dos coeficientes original
-			for(; coluna < system.getNumIncog(); coluna++) 
-				matrixLU[linha][coluna] = system.getCoef(linha, coluna);
-			
-			//Escrevendo os valores da matriz Identidade
-			for( ; coluna < system.getNumIncog()+linha; coluna++) 
-				matrixLU[linha][coluna] = 0;
-			matrixLU[linha][coluna++] = 1;
-			for(; coluna < 2*system.getNumIncog(); coluna++) 
-				matrixLU[linha][coluna] = 0;
-			
-			matrixLU[linha][coluna] = 0; //Termo Independente
-		}
-		return matrixLU;
-	}
 	
+	public Sistema gaussLU(Sistema system, double matrixLower[][]) {
+		double matrixUpper[][] = system.getMatrizCoef();
+		System.out.println("\t\tEscalonamento por Gauss- Adaptado para Fatoração LU: ");
+		
+		for(int i = 0; i < system.getNumEq()-1; i++) {
+			
+			if(matrixUpper[i][i] == 0) //TODO - Matriz de Permutação
+				if(!rowsSwap(matrixUpper,i)) 
+					continue;
+			
+			for(int linha = i+1; linha < system.getNumEq(); linha++) {
+				
+				if(matrixUpper[linha][i] == 0)
+					continue;
+				
+				//TODO - Resolver o problema do limite do double
+				double firstTermo = matrixUpper[linha][i] / matrixUpper[i][i]; 
+				matrixLower[linha][i]= firstTermo;
+				
+				System.out.println("L"+linha+" <- L"+linha+"- ("+firstTermo +" * L"+i+")");
+				
+				for(int coluna = i; coluna < system.getNumIncog(); coluna++) {
+					//matrixUpper[linha][coluna] -= (firstTermo * matrixUpper[i][coluna]);
+				
+					System.out.print("matrixUpper["+linha+"]["+coluna+"] =  "+matrixUpper[linha][coluna]);
+					String str = ""+matrixUpper[i][coluna];
+					System.out.println("-("+firstTermo+" * "+str +")");
+					matrixUpper[linha][coluna] -= (firstTermo * matrixUpper[i][coluna]);
+					System.out.println("matrixLower["+linha+"]["+coluna+"] =  "+matrixUpper[linha][coluna]);
+					
+				}
+			}
+		}
+		
+		return new Sistema(matrixUpper, new double[system.getNumEq()], system.getNumEq(), system.getNumIncog());
+	}
 }

@@ -859,7 +859,7 @@ public class TelaAbas extends Application  {
         		
         		GridPane GPMatrixU = ControllerMatrix.getInstance().transformaMatrizEmGridPaneLabel(matrixLU[0]);
         		GridPane GPMatrixL = ControllerMatrix.getInstance().transformaMatrizEmGridPaneLabel(matrixLU[1]);
-        		//TODO - Acho que é L*U
+        		//L*U
         		
         		
         		GridPane GPSystemOriginal = ControllerSystem.getInstance().transformaSistemaEmGridPaneLabel(system);
