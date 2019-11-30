@@ -1,6 +1,7 @@
-/testes/
-/util/
-/operation/
-/view/
 /control/
 /model/
+/operation/
+/testes/
+/view/
+/util/
+/controller/

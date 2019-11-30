@@ -216,13 +216,8 @@ public class OperationMatriz {
 		return new Matriz(result);
 	}
 	
-	/*Gera o cofator com o determinante das filas excluidas*/
+	/*Gera o cofator com o determinante das filas(linha e coluna) excluidas*/
 	private double cofator(Matriz matrix,int linhaExcluida,int colunaExcluida) {
-		/*  O cofator do elemento aij desta matriz A é obtido da seguinte forma:
-				Aij=((-1)^(i+j)) * Dij
-		* Aij: cofator do elemento aij da matriz A
-		* Dij: determinante da matriz A, excluindo a linha i e a coluna j. 
-		*/
 		double[][] result =  new double[matrix.getLinha()-1][matrix.getLinha()-1];
 				
 		for(int linha = 0; linha < linhaExcluida; linha++) {

@@ -1,4 +1,4 @@
-package control;
+package controller;
 
 import javax.swing.JOptionPane;
 
@@ -8,7 +8,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import model.Matriz;
 import model.Sistema;
+import operation.OperationSystem;
 
 public class ControllerSystem {
 	
@@ -16,7 +18,6 @@ public class ControllerSystem {
 	private ControllerSystem() {}
 	public static ControllerSystem getInstance() {return instance;}
 	
-
 	//Resgata os valores da tabela dos TextField[][] e o converte em no tipo dado "Matriz"
 	public Sistema converteTabelaINSistema(TextField[][] TabelaAmpliada,int eq, int incog){
 		
@@ -307,6 +308,68 @@ public class ControllerSystem {
 			HBoxResultado.getChildren().add(transformaSistemaEmGridPaneLabel(new Sistema(matrix,matrix.length,matrix[0].length)));
 		}
 		return true;
+	}
+	
+	//Auxiliares do System para Imprimir o Posto da Matriz
+	
+	/*Analisa o posto das matrizes ampliada e dos coeficientes*/
+	public void analyzePostAdaptado(HBox HBResultado, Sistema system) {
+		
+		system = OperationSystem.getInstance().gauss(system);
+		
+		int numNaoLinhasZeradasMatrixAmp = 0;
+		int numNaoLinhasZeradasMatrixCoef = 0;
+		
+		for(int linha = 0; linha < system.getNumEq(); linha++) {
+			int coluna = 0;
+			
+			for(; coluna < system.getNumIncog(); coluna++)
+				if(Math.abs(system.getCoef(linha, coluna)) != 0)
+					break;
+			if(coluna < system.getNumIncog()) {
+				numNaoLinhasZeradasMatrixCoef++;
+				numNaoLinhasZeradasMatrixAmp++;
+			}
+			else
+				if(Math.abs(system.getTermo(linha)) != 0)
+					numNaoLinhasZeradasMatrixAmp++;
+		}
+		geraRespostaPosto(HBResultado, system, numNaoLinhasZeradasMatrixCoef, numNaoLinhasZeradasMatrixAmp);
+	}
+	
+	private void geraRespostaPosto(HBox HBResultado, Sistema system, int numNaoLinhasZeradasMatrixCoef, int numNaoLinhasZeradasMatrixAmp) {
+		
+		ControllerMatrix control = ControllerMatrix.getInstance();
+		
+		HBox HBMatrizes = new HBox(20);
+		HBox HBMatrixAmp = new HBox();
+		HBox HBMatrixCoef = new HBox();
+		
+		GridPane GPMatrixAmp = control.transformaMatrizEmGridPaneLabel(new Matriz(system.getMatrizAmpliada()));
+		GridPane GPMatrixCoef = control.transformaMatrizEmGridPaneLabel(new Matriz(system.getMatrizCoef()));
+		
+		HBMatrixAmp.getChildren().addAll(new Label("Matriz Ampliada =        "), GPMatrixAmp);
+		HBMatrixCoef.getChildren().addAll(new Label("Matriz dos Coeficientes = "), GPMatrixCoef);
+		HBMatrizes.getChildren().addAll(HBMatrixAmp, HBMatrixCoef);
+		
+		String classificacao = "";
+		if(numNaoLinhasZeradasMatrixCoef == numNaoLinhasZeradasMatrixAmp) {
+			if(numNaoLinhasZeradasMatrixAmp == system.getNumIncog())
+				classificacao = "Sistema Possivel e Determinado";
+			else												
+				classificacao = "Sistema Possivel e Indeterminado";
+		}else 
+			classificacao = "Sistema Impossivel";
+		
+		VBox VBResultado = new VBox(10);
+		VBResultado.getChildren().addAll(HBMatrizes,new Label(""),
+									     new Label("Posto da Matriz Ampliada: " + numNaoLinhasZeradasMatrixAmp),
+				  						 new Label("Posto da Matriz dos Coeficientes: " + numNaoLinhasZeradasMatrixCoef),
+				  						 new Label("Número de Incognitas: " + system.getNumIncog()),
+				  						 new Label(classificacao));
+		
+		HBResultado.getChildren().clear();
+		HBResultado.getChildren().add(VBResultado);
 	}
 	
 }	

@@ -123,10 +123,10 @@ public class OperationSystem {
 		int numLinhasZeradas = 0;
 		
 		for(int linha = 0; linha < system.getNumEq(); linha++) {
-			if(matrix[linha][system.getNumIncog()] != 0) {  //termo independente != 0
+			if(Math.abs(matrix[linha][system.getNumIncog()]) != 0) {  //termo independente != 0
 				int coluna = 0;
 				for(; coluna < system.getNumIncog(); coluna++)   //verifica se pelo menos um dos coeficientes != 0
-					if(matrix[linha][coluna] != 0)
+					if(Math.abs(matrix[linha][coluna]) != 0)
 						break;
 				if(coluna == system.getNumIncog())  // Então há um elemento na linha que é != 0, logo S.I
 					return 2; // Sistema Impossivel

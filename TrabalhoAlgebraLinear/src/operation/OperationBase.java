@@ -3,11 +3,11 @@ package operation;
 import model.Sistema;
 import model.Vetor;
 
-public class Gram_Schmidt {
+public class OperationBase {
 
-	private static Gram_Schmidt instance = new Gram_Schmidt();
-	private Gram_Schmidt() {}
-	public static Gram_Schmidt getInstance() {return instance;}
+	private static OperationBase instance = new OperationBase();
+	private OperationBase() {}
+	public static OperationBase getInstance() {return instance;}
 	
 	//Projeta vector1 em vector2, ou seja, Faz com que vector1 seja perpendicular ao vector2
 	private Vetor projection(Vetor v,Vetor w) {//v = vector1, w = vector2
@@ -89,7 +89,7 @@ public class Gram_Schmidt {
 	}
 	
 	//Retorna o Produto Interno entre dois vetores
-	private double productInternal(Vetor vector1,Vetor vector2) {
+	public double productInternal(Vetor vector1,Vetor vector2) {
 		double resultado = 0;
 		for(int posCoordenada = 0; posCoordenada < vector1.getNumCoordenadas(); posCoordenada++) 
 			resultado += vector1.getValorCoordenada(posCoordenada) * vector2.getValorCoordenada(posCoordenada); 

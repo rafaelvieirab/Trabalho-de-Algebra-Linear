@@ -2,9 +2,9 @@ package view;
 
 import javax.swing.JOptionPane;
 
-import control.ControllerBase;
-import control.ControllerMatrix;
-import control.ControllerSystem;
+import controller.ControllerBase;
+import controller.ControllerMatrix;
+import controller.ControllerSystem;
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -24,7 +24,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import model.*;
 import operation.*;
-import util.Ultilitarios;
 
 public class TelaAbas extends Application  {
 	//Matriz
@@ -786,7 +785,7 @@ public class TelaAbas extends Application  {
 				ControllerSystem.getInstance().gaussAdaptadoHBoxResultado(HBoxResultado, system);
 				
         	}
-        }); //Fim do Button 
+        }); //Fim do BTGauss 
         
         BTGauss_Jordan.setOnAction(new EventHandler() {
         	@Override
@@ -797,25 +796,18 @@ public class TelaAbas extends Application  {
 				ControllerSystem.getInstance().gaussJordanAlterado(HBoxResultado, system);
         		
         	}
-        }); //Fim do Button 
+        }); //Fim do BTGauss_Jordan 
         
 		BTPosto.setOnAction(new EventHandler() {
         	@Override
         	public void handle(Event arg0) {
-        		//TODO
         		Sistema system = ControllerSystem.getInstance().converteTabelaINSistema(TabelaMatrizAmpliada, numEq, numIncog);
         		
-				if(system == null) return; //Erro tratado em converteGridPaneINSistema()
-				
-				//Sistema resul = OperationSystem.getInstance().analyzePost(system);
-				OperationSystem.getInstance().analyzePost(system);
-				HBoxResultado.getChildren().clear();
-//				if(resul == null) return; //Erro tratato dentro do metodo gaussJordan()
-//        		geraGridPaneResultado(GPSystemResposta, resul);
-//        		buildResultadoSystem(HBoxResultado, system, GPSystemResposta);
-        		
+				if(system == null) 
+					return; //Erro tratado em converteGridPaneINSistema()
+				ControllerSystem.getInstance().analyzePostAdaptado(HBoxResultado, system);
         	}
-        }); //Fim do Button 
+        }); //Fim do BTPosto 
         
 		BTApresentarSolucao.setOnAction(new EventHandler() {
         	@Override
@@ -963,7 +955,7 @@ public class TelaAbas extends Application  {
 					return;
 				
 				//TODO - corrigir operacao de Ortogonalizacao
-				Vetor[] baseOrtoganalizada = Gram_Schmidt.getInstance().orthogonalization(base);
+				Vetor[] baseOrtoganalizada = OperationBase.getInstance().orthogonalization(base);
 				if(baseOrtoganalizada == null) //Erro tratato dentro do metodo orthogonalization(a, b)
 					return;
 				
@@ -984,7 +976,7 @@ public class TelaAbas extends Application  {
 				if(base == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
 				
-				Vetor[] baseOrtonormalizada = Gram_Schmidt.getInstance().orthonormalization(base);
+				Vetor[] baseOrtonormalizada = OperationBase.getInstance().orthonormalization(base);
 				if(baseOrtonormalizada == null) //Erro tratato dentro do metodo orthonormalization()
 					return;
 					
