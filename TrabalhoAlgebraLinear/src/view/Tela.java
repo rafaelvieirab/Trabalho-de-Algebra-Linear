@@ -297,16 +297,18 @@ public class Tela extends Application  {
 
 			@Override
 			public void handle(Event arg0) {
-				//Receber o valor que deve ser multiplicado e a matriz
-				
-				double scalar;
-				try{scalar = Double.parseDouble(JOptionPane.showInputDialog(null, "Digite o valor do Escalar:"));}
-				catch (Exception e) {scalar = 0;}
-				
 				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
 				
 				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
+				
+				double scalar;
+				try{scalar = Double.parseDouble(JOptionPane.showInputDialog(null, "Digite o valor do Escalar:"));}
+				catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Digite apenas números","Erro no Escalar", JOptionPane.ERROR_MESSAGE);
+					scalar = 0;
+					return;
+				}
 				
 				Matriz resul = OperationMatriz.getInstance().scalarMultiplication(scalar, matrix);
 				if(resul == null) //Erro tratato dentro do metodo scalarMultiplication()
@@ -392,15 +394,17 @@ public class Tela extends Application  {
 		BPotenciaA.setOnAction(new EventHandler() {
 			@Override
 			public void handle(Event arg0) {
-				// //Receber o valor que deve ser potenciado e a matriz
-				//TODO - COnseguir uma forma de receber esse valor
-				int expoente;
-				try{expoente = Integer.parseInt(JOptionPane.showInputDialog(null, "Digite o valor do Escalars"));}
-				catch (Exception e) {expoente = 0;}
-				
 				Matriz matrix = ControllerMatrix.getInstance().converteTabelaINMatriz(TabelaMatrizA, linhaMatrA, colunaMatrA);
 				if(matrix == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
+				
+				int expoente;
+				try{expoente = Integer.parseInt(JOptionPane.showInputDialog(null, "Digite o valor do Expoente"));}
+				catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Digite apenas números","Erro na Potencia", JOptionPane.ERROR_MESSAGE);
+					expoente = 0;
+					return;
+				}
 				
 				Matriz resul = OperationMatriz.getInstance().potency(matrix, expoente);
 				if(resul == null) //Erro tratato dentro do metodo potency()
@@ -507,7 +511,11 @@ public class Tela extends Application  {
 				
 				double scalar;
 				try{scalar = Double.parseDouble(JOptionPane.showInputDialog(null, "Digite o valor do Escalar:"));}
-				catch (Exception e) {scalar = 0;}
+				catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Digite apenas números","Erro no Escalar", JOptionPane.ERROR_MESSAGE);
+					scalar = 0;
+					return;
+				}
 				
 				Matriz resul = OperationMatriz.getInstance().scalarMultiplication(scalar, matrix);
 				if(resul == null) //Erro tratato dentro do metodo scalarMultiplication()
@@ -599,8 +607,12 @@ public class Tela extends Application  {
 					return;
 				
 				int expoente;
-				try{expoente = Integer.parseInt(JOptionPane.showInputDialog(null, "Digite o valor do Escalar:"));}
-				catch (Exception e) {expoente = 0;}
+				try{expoente = Integer.parseInt(JOptionPane.showInputDialog(null, "Digite o valor do Expoente:"));}
+				catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Digite apenas números","Erro na Potencia", JOptionPane.ERROR_MESSAGE);
+					expoente = 0;
+					return;
+				}
 				
 				
 				Matriz resul = OperationMatriz.getInstance().potency(matrix, expoente);
