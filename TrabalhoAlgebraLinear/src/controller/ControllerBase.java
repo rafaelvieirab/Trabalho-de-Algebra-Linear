@@ -66,35 +66,27 @@ public class ControllerBase {
 		}
 	}
 	
-
 	//Resgata os valores da tabela dos TextField[][] e o converte em no tipo dado "Vector[]"
 	public Vetor[] converteTabelaINBase(TextField[][] TabelaBase,int numVet){
 
 		try {
-			if(numVet < 1) {
-				JOptionPane.showMessageDialog(null, "O número de Vetores e de Coordenadas devem ser maiores que 0!!", "Erro ao criar a Base" , JOptionPane.ERROR_MESSAGE);
-				return null;
-			}
-			
 			Vetor base[] = new Vetor[numVet];
 			Vetor vector;
-			for(int i = 0; i< numVet; i++) {
+			for(int i = 0; i < numVet; i++) {
 				vector = new Vetor(numVet);
 				for(int j = 0; j< numVet; j++) 
 					vector.setValorCoordenada(j, Double.parseDouble(TabelaBase[i][j].getText()));
 				base[i] = vector;
 			}
-			
 			return base;
 
 		}catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Digite apenas números nos campos", "Erro ao criar Base" , JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Digite apenas números nos campos", "Erro ao transferir dados da Base" , JOptionPane.ERROR_MESSAGE);
 		}
 
 		return null;
 	}
 	
-
 	//Recebe uma Vetor[] e retorna um GridPane formado por Label's com os valores do vetor
 	public GridPane transformaBaseEmGridPaneLabel(Vetor base[]) {
 		Label celula;

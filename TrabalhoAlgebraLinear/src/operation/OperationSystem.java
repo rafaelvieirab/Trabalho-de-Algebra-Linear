@@ -46,12 +46,9 @@ public class OperationSystem {
 	/*Gauss-Jordan*/
 	public Sistema gaussJordan(Sistema system) {
 		
-		System.out.println("\t\tEscalonamento por Gauss-Jordan: ");
 		if(system.getNumEq() <= 1 || system.getNumIncog() <= 1)
 			return system;
 		double[][] matrixAmp = gauss(system).getMatrizAmpliada();
-		
-		System.out.println("\t\tParte do Gauss-Jordan: ");
 		
 		int i = (system.getNumEq() < system.getNumIncog()) ? system.getNumEq() : system.getNumIncog();
 		i--;
@@ -60,7 +57,6 @@ public class OperationSystem {
 				continue;
 			if(matrixAmp[i][i] != 1) { //Verifica se o Pivo Atual != 1
 				double divisor = matrixAmp[i][i];
-				System.out.println("\nL"+i+" <- L"+i+"/"+divisor+"\n");
 				for(int j = 0; j <= system.getNumIncog(); j++) 
 					matrixAmp[i][j] /= divisor;
 			}
@@ -69,7 +65,6 @@ public class OperationSystem {
 				double firstTermo = matrixAmp[linha][i];	//pega o 1° elemento que vai ser zerado
 				if(firstTermo == 0)
 					continue;
-				System.out.println("L"+linha+" <- L"+linha+"- ("+firstTermo +" * L"+i+")");
 				
 				for(int coluna = system.getNumIncog(); coluna >= 0; coluna--) 
 					matrixAmp[linha][coluna] -=  (firstTermo*matrixAmp[i][coluna]);	
@@ -168,7 +163,6 @@ public class OperationSystem {
 					solucao += "x"+ pos+" = "+system.getTermo(pos) + returnCoef(matrix,pos) + "\n";
 					System.out.println("x"+ pos+" = "+system.getTermo(pos) + returnCoef(matrix,pos));
 				}
-				
 			}
 		}
 		return solucao;

@@ -862,14 +862,22 @@ public class Tela extends Application  {
         		
         		GridPane GPMatrixU = ControllerMatrix.getInstance().transformaMatrizEmGridPaneLabel(matrixLU[0]);
         		GridPane GPMatrixL = ControllerMatrix.getInstance().transformaMatrizEmGridPaneLabel(matrixLU[1]);
-        		//L*U
-        		
-        		
-        		GridPane GPSystemOriginal = ControllerSystem.getInstance().transformaSistemaEmGridPaneLabel(system);
+        		GridPane GPSystemOriginal = ControllerMatrix.getInstance().transformaMatrizEmGridPaneLabel(new Matriz(system.getMatrizCoef()));
+    			
+    			HBox HBA = new HBox(10);
+    			HBox HBL = new HBox(10);
+    			HBox HBU = new HBox(10);
+    			VBox VBResultado = new VBox();
+    			
+    			HBA.getChildren().addAll(new Label("Matriz A"), new Label(" = "), GPSystemOriginal);
+    			HBL.getChildren().addAll(new Label("Matriz L"), new Label(" = "), GPMatrixL);
+    			HBU.getChildren().addAll(new Label("Matriz U"), new Label(" = "), GPMatrixU);
+    			VBResultado.getChildren().addAll(HBA,new Label(""), HBL,new Label(""), HBU);
+    			
     			HBoxResultado.setAlignment(Pos.CENTER);
     			HBoxResultado.getChildren().clear();
-    			HBoxResultado.getChildren().addAll(GPSystemOriginal, new Label("="), GPMatrixL, new Label("*"), GPMatrixU);
-        		
+    			HBoxResultado.getChildren().add(VBResultado);
+    			
         	}
         }); //Fim do Button 
         
@@ -940,15 +948,16 @@ public class Tela extends Application  {
 					
 					numVetores = Integer.parseInt(TFNumVetores.getText());
 					
-					if(numVetores < 0) 
-						throw new Exception("Digite apenas valores númericos positivos");
-					
+					if(numVetores < 1) {
+						JOptionPane.showMessageDialog(null, "O número de Vetores deve ser maiores que 0!!", "Erro ao criar a Base" , JOptionPane.ERROR_MESSAGE);
+						return;
+					}
 					TabelaBase = new TextField[numVetores][numVetores];
 					GPBase.getChildren().clear();
 					ControllerBase.getInstance().geraTabelaBase(GPBase, TabelaBase, numVetores);
 				
         		} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, "Preencha os campos com numeros positivos", "Erro ao gerar Sistema" , JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Preencha os campos com numeros positivos", "Erro ao gerar Base" , JOptionPane.ERROR_MESSAGE);
 				}
         	}
 		}); //Fim do Button BTGerar 
@@ -956,21 +965,18 @@ public class Tela extends Application  {
         BTOrtogonalizar.setOnAction(new EventHandler() {
         	@Override
         	public void handle(Event arg0) {
-        		
-        		Vetor base[] = ControllerBase.getInstance().converteTabelaINBase(TabelaBase, numEq);
+        		ControllerBase control = ControllerBase.getInstance();
+        		Vetor base[] = control.converteTabelaINBase(TabelaBase, numVetores);
 				
-				if(base == null) //Erro tratado em converteGridPaneINMatriz()
+				if(base == null) //Erro tratado em converteTabelaINBase()
 					return;
 				
-				//TODO - corrigir operacao de Ortogonalizacao
 				Vetor[] baseOrtoganalizada = OperationBase.getInstance().orthogonalization(base);
 				if(baseOrtoganalizada == null) //Erro tratato dentro do metodo orthogonalization(a, b)
 					return;
 				
-				Label celula;
-				
-				VBox VBBaseOrto = ControllerBase.getInstance().geraGridPaneResultado(baseOrtoganalizada);
-				ControllerBase.getInstance().buildResultadoBase(HBoxResultado, base, VBBaseOrto);
+				VBox VBBaseOrto = control.geraGridPaneResultado(baseOrtoganalizada);
+				control.buildResultadoBase(HBoxResultado, base, VBBaseOrto);
 			
         	}
 		}); //Fim do Button BTOrtogonalizar
@@ -979,9 +985,9 @@ public class Tela extends Application  {
         	@Override
         	public void handle(Event arg0) {
         		
-        		Vetor[] base = ControllerBase.getInstance().converteTabelaINBase(TabelaBase, numEq); 
+        		Vetor[] base = ControllerBase.getInstance().converteTabelaINBase(TabelaBase, numVetores); 
 				
-				if(base == null) //Erro tratado em converteGridPaneINMatriz()
+				if(base == null) //Erro tratado em converteTabelaINBase()
 					return;
 				
 				Vetor[] baseOrtonormalizada = OperationBase.getInstance().orthonormalization(base);

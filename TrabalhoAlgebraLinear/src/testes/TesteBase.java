@@ -63,8 +63,8 @@ public class TesteBase {
 	
 	public static void main(String[] args) {
 		//teste1();
-		//teste2();
-		teste3();
+		teste2();
+		//teste3();
 	}
 
 }

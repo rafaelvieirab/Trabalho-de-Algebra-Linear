@@ -6,11 +6,6 @@ import operation.OperationSystem;
 
 public class TesteSistemas {
 
-	/*TODO*/
-	/* FatoracaoLU - Não funciona
-	 * Além disso, conseguir uma forma de trocar as linhas da matriz  
-	 * 	=> Solucao: Matriz de Permutacao
-	 * */
 	public static boolean testeFU1() {
 		double[][] valores = {{3,5,2},
 				{0,8 ,2},
