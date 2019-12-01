@@ -6,30 +6,65 @@ import operation.OperationBase;
 public class TesteBase {
 	static OperationBase op = OperationBase.getInstance();
 	
-	static boolean verificaOrtogonalidade(Vetor base[]) {
-		boolean isOrtogonal = true;
-		for(int vectorActual = 0; vectorActual < base.length; vectorActual++) {
-			for(int i = 0; i < vectorActual; i++)
-				isOrtogonal = (op.productInternal(base[vectorActual], base[i]) == 0);
-			for(int i = vectorActual+1; i < base.length; i++)
-				isOrtogonal = (op.productInternal(base[vectorActual], base[i]) == 0);
-		}
-		System.out.println("isOrtogonal: " + isOrtogonal);
-		return isOrtogonal;
+	static void teste1() {
+		double[][] vetores = {{1,2},
+							  {3,-8}};
+		
+		/*Base Ortogonalizada
+		 	{(1,2),
+		 	(-13/5, -26/5)}
+		 */
+		
+		Vetor[] base = new Vetor[vetores.length];
+		for(int i = 0; i < vetores.length; i++)
+			base[i] = new Vetor(vetores[i]);
+		
+		imprimeBase(base);
+	}
+	static void teste2() {
+		double[][] vetores = {{1,0,1},
+							  {1,1,0},
+							  {0,1,1}};
+		
+		/*Base Ortogonalizada
+		 	{{1,0,1},
+			{1/2,1,-1/2},
+			{-2/3,2/3,2/3}}
+		 */
+		
+		Vetor[] base = new Vetor[vetores.length];
+		for(int i = 0; i < vetores.length; i++)
+			base[i] = new Vetor(vetores[i]);
+		
+		imprimeBase(base);
+	}
+	static void teste3() {
+		double[][] vetores = {{12,6,-4},
+							  {-51,167,24},
+							  {4,-68,-41}};
+		
+		/*Base Ortogonalizada
+		 	{{12,6,-4},
+			{-69,158,30},
+			{-58/5,6/5,-33}}
+		 */
+		
+		Vetor[] base = new Vetor[vetores.length];
+		for(int i = 0; i < vetores.length; i++)
+			base[i] = new Vetor(vetores[i]);
+		
+		imprimeBase(base);
+	}
+	static void imprimeBase(Vetor base[]) {
+		base = op.orthogonalization(base);
+		for(Vetor vector : base)
+			System.out.println(vector.toString());
 	}
 	
 	public static void main(String[] args) {
-		double[][] vetores = {{1,2,0},
-							{0,1,0},
-							{0,0,1}};
-		Vetor[] base = new Vetor[vetores.length];
-		
-		for(int i = 0; i < vetores.length; i++)
-			base[i] = new Vetor(vetores[i]);
-
-		
-		base = op.orthogonalization(base);
-		verificaOrtogonalidade(base);
+		//teste1();
+		//teste2();
+		teste3();
 	}
 
 }

@@ -13,21 +13,20 @@ public class OperationBase {
 	private Vetor projection(Vetor v,Vetor w) {//v = vector1, w = vector2
 		//proj(v,w) = cw = 	((v*w) /(w*w)) * w
 		double vw = productInternal(v, w);
-		double ww= w.modulo();
+		double ww= productInternal(w, w);
 		Vetor cw = w.multiplicaEscalar(vw/ww);
 		return cw;
 	}
 	
 	//Ortoganaliza a base
 	public Vetor[] orthogonalization(Vetor[] base) {
-		base = verificaDependencia(base); //implementar depois
 		int lengthBase = base[0].getNumCoordenadas();
 		Vetor[] newBase = new Vetor[lengthBase];
 		
 		for(int posAtual = 0; posAtual < lengthBase ; posAtual++) {
 			newBase[posAtual] = base[posAtual];
 			for(int anterior = 0; anterior < posAtual ; anterior++) 
-				newBase[posAtual] = subtraction(newBase[posAtual], projection(base[posAtual], base[anterior])); 
+				newBase[posAtual] = subtraction(newBase[posAtual], projection(base[posAtual], newBase[anterior])); 
 		}
 		return newBase;
 	}
@@ -39,53 +38,6 @@ public class OperationBase {
 			 newBase[posAtual] = newBase[posAtual].normaliza();
 		}
 		return newBase;
-	}
-	
-	//Verifica se cada vetor é combinação linear dos outros
-	private Vetor[] verificaDependencia(Vetor[] base) {
-		Sistema system = vectorArrayToSystem(base);
-		return completeBase(system);
-	}
-	
-	//Transforma os vetores em um sistema escalonado
-	private Sistema vectorArrayToSystem(Vetor[] base) {
-		double[][] coordenadas = new double[base.length][base[0].getNumCoordenadas()];
-		
-		for(int i = 0; i< base.length; i++) 
-			for(int j = 0; j< base[0].getNumCoordenadas(); j++) 
-				coordenadas[i][j] = base[i].getValorCoordenada(j);
-		
-		Sistema system = new Sistema(coordenadas,new double[base.length], base.length,base[0].getNumCoordenadas());
-		return OperationSystem.getInstance().gauss(system);
-	}
-	
-	/*
-	private Vetor[] systemToVectorArray(Sistema system) {
-		Vetor[] vectorArray = new Vetor[system.getNumEq()];
-		double[][] coordenadas = system.getMatrizCoef();
-		
-		for(int i = 0; i< system.getNumEq(); i++) 
-			vectorArray[i] = new Vetor(coordenadas[i]);
-		return vectorArray;
-	}
-	*/
-	
-	//TODO - Completa a base com os vetores independentes restantes
-	private Vetor[] completeBase(Sistema system) {
-		double[][] array = system.getMatrizCoef();
-		
-		for(int i = 0 ; i < array.length; i++) 
-			if(array[i][i] == 0) {//Sobrescreve a linha atual, criando o vetor independe que estava faltando
-				for(int j = 0; j < system.getNumIncog(); j++) 
-					array[i][j] = 0;
-				array[i][i] = 1;
-			}
-		
-		//Transformando o array no Vetor[]
-		Vetor[] vectorArray = new Vetor[array.length];
-		for(int i = 0 ; i< array.length; i++) 
-			vectorArray[i] = new Vetor(array[i]);
-		return vectorArray;
 	}
 	
 	//Retorna o Produto Interno entre dois vetores

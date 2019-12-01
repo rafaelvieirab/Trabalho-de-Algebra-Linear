@@ -25,7 +25,7 @@ import javafx.stage.Stage;
 import model.*;
 import operation.*;
 
-public class TelaAbas extends Application  {
+public class Tela extends Application  {
 	//Matriz
 	private  int linhaMatrA = 3;
 	private  int colunaMatrA = 3;
@@ -42,8 +42,7 @@ public class TelaAbas extends Application  {
 	
 	//Gram_Schmidt
 	private int numVetores = 3;
-	private int numCoordenadas = 3;
-	private TextField TabelaBase[][] = new TextField[numVetores][numCoordenadas];
+	private TextField TabelaBase[][] = new TextField[numVetores][numVetores];
 	
 	//Abas
 	private TabPane painelAbas = new TabPane(); // Trabalhando com abas
@@ -884,13 +883,11 @@ public class TelaAbas extends Application  {
 		int DimensoesHeight =  10; // altura
 		int DimensoesWidth = 40 ; // largura
 		
-		final TextField TFCoordenadas = new TextField("3");
 		final TextField TFNumVetores = new TextField("3");
-		TFCoordenadas.setMaxSize(DimensoesWidth, DimensoesHeight);
 		TFNumVetores.setMaxSize(DimensoesWidth, DimensoesHeight);
 		
 		GridPane GPBase = new GridPane();
-		ControllerBase.getInstance().geraTabelaBase(GPBase, TabelaBase, numVetores, numCoordenadas);
+		ControllerBase.getInstance().geraTabelaBase(GPBase, TabelaBase, numVetores);
 		
 		ScrollPane SPBase = new ScrollPane(GPBase);
 		SPBase.setMaxSize(300,300);
@@ -898,7 +895,7 @@ public class TelaAbas extends Application  {
 		HBox HBoxDefinicoesBase = new HBox(); //Linha e Coluna recebidas do Sistema
 		Button BTGerar = new Button("Gerar Base");
 		BTGerar.setMaxSize(100, 100);	
-		HBoxDefinicoesBase.getChildren().addAll(new Label("Número de Vetores: "), TFNumVetores, new Label (" X "),new Label("Coordenadas: "), TFCoordenadas, new Label("  "), BTGerar);		
+		HBoxDefinicoesBase.getChildren().addAll(new Label("Número de Vetores: "), TFNumVetores, new Label("  "), BTGerar);		
 		
 		VBox VBoxBase = new VBox(10);
 		VBoxBase.setTranslateX(100);
@@ -926,18 +923,17 @@ public class TelaAbas extends Application  {
         	@Override
         	public void handle(Event arg0) {
         		try {
-					if(TFNumVetores.getText().equals("") || TFCoordenadas.getText().equals(""))
+					if(TFNumVetores.getText().equals(""))
 						throw new Exception("Digite algum valor númerico!!!");
 					
 					numVetores = Integer.parseInt(TFNumVetores.getText());
-					numCoordenadas = Integer.parseInt(TFCoordenadas.getText());
 					
-					if(numVetores < 0 || numCoordenadas < 0) 
+					if(numVetores < 0) 
 						throw new Exception("Digite apenas valores númericos positivos");
 					
-					TabelaBase = new TextField[numVetores][numCoordenadas];
+					TabelaBase = new TextField[numVetores][numVetores];
 					GPBase.getChildren().clear();
-					ControllerBase.getInstance().geraTabelaBase(GPBase, TabelaBase, numVetores, numCoordenadas);
+					ControllerBase.getInstance().geraTabelaBase(GPBase, TabelaBase, numVetores);
 				
         		} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Preencha os campos com numeros positivos", "Erro ao gerar Sistema" , JOptionPane.ERROR_MESSAGE);
@@ -949,7 +945,7 @@ public class TelaAbas extends Application  {
         	@Override
         	public void handle(Event arg0) {
         		
-        		Vetor base[] = ControllerBase.getInstance().converteTabelaINBase(TabelaBase, numEq, numCoordenadas);
+        		Vetor base[] = ControllerBase.getInstance().converteTabelaINBase(TabelaBase, numEq);
 				
 				if(base == null) //Erro tratado em converteGridPaneINMatriz()
 					return;
@@ -971,7 +967,7 @@ public class TelaAbas extends Application  {
         	@Override
         	public void handle(Event arg0) {
         		
-        		Vetor[] base = ControllerBase.getInstance().converteTabelaINBase(TabelaBase, numEq, numCoordenadas); 
+        		Vetor[] base = ControllerBase.getInstance().converteTabelaINBase(TabelaBase, numEq); 
 				
 				if(base == null) //Erro tratado em converteGridPaneINMatriz()
 					return;

@@ -17,7 +17,7 @@ public class ControllerBase {
 	
 
 	//Controi o GridPane da Base e o preenche com TextField para os Vetores e suas Coordenadas
-	public void geraTabelaBase(GridPane GPBase, TextField[][] TabelaBase, int numVetores, int numCoordenadas) {
+	public void geraTabelaBase(GridPane GPBase, TextField[][] TabelaBase, int numVetores) {
 		TextField celula;
 		Label simbolo;
 		
@@ -28,7 +28,7 @@ public class ControllerBase {
 			GPBase.setColumnIndex(simbolo, coluna);    
 			GPBase.getChildren().add(simbolo);
 			
-			for(; coluna < numCoordenadas-1; coluna++){
+			for(; coluna < numVetores-1; coluna++){
 				celula = new TextField();
 				TabelaBase[linha][coluna] = celula;
 
@@ -68,10 +68,10 @@ public class ControllerBase {
 	
 
 	//Resgata os valores da tabela dos TextField[][] e o converte em no tipo dado "Vector[]"
-	public Vetor[] converteTabelaINBase(TextField[][] TabelaBase,int numVet, int numCoord){
+	public Vetor[] converteTabelaINBase(TextField[][] TabelaBase,int numVet){
 
 		try {
-			if(numVet < 1 || numCoord < 1) {
+			if(numVet < 1) {
 				JOptionPane.showMessageDialog(null, "O número de Vetores e de Coordenadas devem ser maiores que 0!!", "Erro ao criar a Base" , JOptionPane.ERROR_MESSAGE);
 				return null;
 			}
@@ -79,8 +79,8 @@ public class ControllerBase {
 			Vetor base[] = new Vetor[numVet];
 			Vetor vector;
 			for(int i = 0; i< numVet; i++) {
-				vector = new Vetor(numCoord);
-				for(int j = 0; j< numCoord; j++) 
+				vector = new Vetor(numVet);
+				for(int j = 0; j< numVet; j++) 
 					vector.setValorCoordenada(j, Double.parseDouble(TabelaBase[i][j].getText()));
 				base[i] = vector;
 			}

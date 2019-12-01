@@ -310,7 +310,7 @@ public class ControllerSystem {
 		return true;
 	}
 	
-	//Auxiliares do System para Imprimir o Posto da Matriz
+	//Auxiliares do System para Imprimir o Posto do Sistema
 	
 	/*Analisa o posto das matrizes ampliada e dos coeficientes*/
 	public void analyzePostAdaptado(HBox HBResultado, Sistema system) {
